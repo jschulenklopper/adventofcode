@@ -1,0 +1,8 @@
+lf AND lq -> ls
+iu RSHIFT 1 -> jn
+bo OR bu -> bv
+gj RSHIFT 1 -> hc
+is OR it -> iu
+n -> o
+NOT kt -> ku
+3 -> ab
