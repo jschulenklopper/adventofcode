@@ -1,19 +1,29 @@
 require 'json'
 
-def value(thing)
-  return 0 if thing.is_a?(String)
-
-  return thing if thing.is_a?(Integer)
-
-  if thing.is_a?(Array)
-    return thing.inject(0) { |sum, v| sum += value(v) }
+class String
+  def santa_value
+    0
   end
+end
 
-  if thing.is_a?(Hash)
-    return 0 if thing.values.include?("red")
-    return value(thing.values)
+class Integer
+  def santa_value
+    self
+  end
+end
+
+class Array
+  def santa_value
+    self.inject(0) { |sum, v| sum += v.santa_value }
+  end
+end
+
+class Hash
+  def santa_value
+    return 0 if self.values.include?("red")
+    return self.values.santa_value
   end
 end
 
 input = JSON.parse(gets.strip)
-puts value(input)
+puts input.santa_value
