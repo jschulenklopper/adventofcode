@@ -17,17 +17,28 @@ class Ingredient
 end
 
 def distribute(total, ingredients)
-  # puts "distribute(%d, %s)" % [total, ingredients.to_s]
+  yield ({ingredients.first => total}) and return if ingredients.length == 1
 
-  # binding.pry
-
-  yield ingredients and return if ingredients.length == 0
-
-  ingredients.each do |ingredient|
-    distribute(100, ingredients - [ingredient]) do |distribution|
-      yield [ingredient] + distribution
+  ingredient = ingredients.first
+  (0..total).each do |amount|
+    distribute(total - amount, ingredients - [ingredient] ) do |distribution|
+      yield ({ingredient=>amount}.merge(distribution))
     end
   end
+end
+
+def compute_score(combination)
+  score = 1
+
+  %w(capacity durability flavor texture).each do |property|
+    subscore = 0
+    combination.each do |ingredient, amount|
+      subscore += amount * ingredient.instance_variable_get("@#{property}").to_i
+    end
+    subscore = 0 if subscore < 0
+    score *= subscore
+  end
+  score
 end
 
 ingredients = Array.new
@@ -44,12 +55,14 @@ while line = gets
   ingredients << ingredient
 end
 
+c = Array.new
 max_score = 0
 
-distribute(100, %w(a b c d)) do |distr|
-  p distr
-  # score = compute_score(distr)
-  # max_score = score if score > max_score
+distribute(100, ingredients) do |combination|
+  score = compute_score(combination)
+  max_score = score if score > max_score
+  c << combination
 end
 
-# puts max_score
+
+puts max_score
