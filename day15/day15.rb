@@ -1,5 +1,3 @@
-require 'pry'
-
 class Ingredient
   attr_reader :name
 
@@ -7,10 +5,6 @@ class Ingredient
     @name = string
   end
   
-  def to_s
-    @name
-  end
-
   def method_missing(property, value)
     instance_variable_set(("@" + property.to_s).to_sym, value.to_s)
   end
@@ -61,8 +55,8 @@ max_score = 0
 distribute(100, ingredients) do |combination|
   score = compute_score(combination)
   max_score = score if score > max_score
+  # This is a stupid line, but I get a stack level too deep if omitted.
   c << combination
 end
-
 
 puts max_score
