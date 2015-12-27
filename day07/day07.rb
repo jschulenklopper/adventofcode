@@ -5,21 +5,36 @@ class String
 end
 
 class Instructions < Array
+  def initialize
+    @storage = Hash.new
+    # For second part of puzzle, enable next line.
+    # @storage["b"] = 16076
+  end
+
+  def storage
+    @storage
+  end
+
   def value(wire)
-    puts "value(%s)" % wire
-    puts "     (%s)" % wire.class
+    # Direct integer.
     if wire.class == Integer || wire.class == Fixnum
       return wire
     end
-    if wire.is_integer?
+    # String but with integer value.
+    if wire.is_integer? 
       return wire.to_i
-    else
-      p instruction = self.find { |instr| instr.out == wire }
-      p op = instruction.operation
-      p in_1 = value(instruction.in_1)
-      p in_2 = value(instruction.in_2) if instruction.in_2
-      return eval("Instruction.%s(%s,%s)" % [op, in_1, in_2])
     end
+    # Previously stored value.
+    if @storage[wire]
+      return @storage[wire]
+    end
+    # OK, so we need to compute the value...
+    instruction = self.find { |instr| instr.out == wire }
+    op = instruction.operation
+    in_1 = value(instruction.in_1)
+    in_2 = value(instruction.in_2) if instruction.in_2
+    # ... and also store the result.
+    @storage[wire] = eval("Instruction.%s(%s,%s)" % [op, in_1, in_2])
   end
 end 
 
@@ -60,33 +75,27 @@ class Instruction
   end
   
   def Instruction.ASSIGN(in_1, *in_2)
-    puts "Instruction.ASSIGN(): %s" % in_1
     in_1
   end
 
   def Instruction.NOT(in_1, *in_2)
-    puts "Instruction.NOT(): %s" % ~in_1
     ~in_1
   end
 
   def Instruction.OR(in_1, in_2)
-    puts "Instruction.OR(): %s" % (in_1 | in_2)
     in_1 | in_2
   end
 
   def Instruction.AND(in_1, in_2)
-    puts "Instruction.AND(): %s" % (in_1 & in_2)
     in_1 & in_2
   end
 
   def Instruction.RSHIFT(in_1, in_2)
-    puts "Instruction.RSHIFT(): %s" % (in_1 << in_2)
-    in_1 << in_2
+    in_1 >> in_2
   end
 
   def Instruction.LSHIFT(in_1, in_2)
-    puts "Instruction.LSHIFT(): %s" % (in_1 >> in_2)
-    in_1 >> in_2
+    in_1 << in_2
   end
 end
 
@@ -94,11 +103,8 @@ instructions = Instructions.new;
 
 # Parse the wiring instructions
 while line = gets
-  puts line
   instructions << Instruction.new(line)
 end
-
-puts "---\nNumber of instructions: %d" % [instructions.length]
 
 # Compute value of requested wire.
 puts instructions.value("a")
