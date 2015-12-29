@@ -1,5 +1,3 @@
-require 'pry'
-
 class Ingredient
   def method_missing(property, value)
     instance_variable_set(("@" + property.to_s).to_sym, value.to_s)
