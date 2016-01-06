@@ -18,7 +18,7 @@ while packages_in_front <= max_packages_per_compartment
   valid_fillings = packages.combination(packages_in_front).select do |a|
     a.reduce(:+) == load_per_compartment
     # TODO Test assumption that rest of packages can be
-    # divided in two equal-weight groups as well.
+    # divided in three equal-weight groups as well.
   end
   break if valid_fillings.length > 0
   packages_in_front += 1
