@@ -30,5 +30,5 @@ combinations(containers) do |combination|
   end
 end
 
-# Count the number of combinations with minimum lenght.
+# Count the number of combinations with minimum length.
 puts possible_distributions.reject { |d| d.length != min_length }.length

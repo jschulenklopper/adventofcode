@@ -1,14 +1,12 @@
-def distribute(amount, containers, level)
-  # puts "%s distribute(%d, %s)" % [" "*level, amount, containers.to_s]
-
+def distribute(amount, containers)
   return 1 if amount == 0
   return 0 if amount < 0 || containers.empty?
 
   remaining = containers.clone
   first = remaining.pop
 
-  return distribute(amount - first, remaining, level+1) +
-         distribute(amount, remaining, level+1)
+  return distribute(amount - first, remaining) +
+         distribute(amount, remaining)
 end
 
 containers = Array.new
@@ -19,4 +17,4 @@ end
 
 # puts containers.to_s
 
-puts distribute(150, containers, 0)
+puts distribute(150, containers)
