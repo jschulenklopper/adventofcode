@@ -9,14 +9,10 @@ while line = gets do # Assume that instructions span multiple lines.
     turn == "R" ? orientation += 1 : orientation += -1
 
     case orientation % 4
-    when 0
-      position[0] += distance
-    when 1
-      position[1] += distance
-    when 2
-      position[0] -= distance
-    when 3
-      position[1] -= distance
+      when 0 then position[1] += distance
+      when 1 then position[0] += distance
+      when 2 then position[1] -= distance
+      when 3 then position[0] -= distance
     end
   end
 end

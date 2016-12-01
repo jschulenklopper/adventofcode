@@ -11,26 +11,19 @@ while line = gets do # Assume that instructions can span multiple lines.
 
     while distance > 0
       case orientation % 4
-        when 0
-          position[0] += 1 # Move North.
-        when 1
-          position[1] += 1 # Move East.
-        when 2
-          position[0] -= 1
-        when 3
-          position[1] -= 1
+        when 0 then position[1] += 1 # Move North.
+        when 1 then position[0] += 1 # Move East.
+        when 2 then position[1] -= 1 # 
+        when 3 then position[0] -= 1
       end
 
-      distance -= 1
-    
       if visited.include? (position)
-        # We've been on this position before, so break.
         puts position[0].abs + position[1].abs
         exit
-      else
-        visited << position.dup
       end
+
+      visited << position.dup
+      distance -= 1
     end
   end
 end
-
