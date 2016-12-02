@@ -19,11 +19,12 @@ instructions.each do | instruction |
 
     if visited.include?(position) and second_time == nil
       second_time = position.dup
-      puts second_time[0].abs + second_time[1].abs
-      exit
     end
 
     visited << position.dup
     distance -= 1
   end
 end
+
+puts "Final distance: %s" % [position[0].abs + position[1].abs]
+puts "First location visited twice: %d" % [second_time[0].abs + second_time[1].abs]
