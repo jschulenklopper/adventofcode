@@ -10,7 +10,7 @@ keys =  [[nil,nil,"1",nil,nil],
 # Make the X and Y more logical by transposing matrix, `keys[0][2] == "5"`.
 keys = keys.transpose
 
-position = [0,2]  # First column (X) and third row (Y).
+position = [0,2]  # Starting position, first column (X) and third row (Y).
 code = ""
 
 while instructions = gets do
@@ -21,7 +21,7 @@ while instructions = gets do
 
     # Check whether new_position is within valid grid.
     if new_position[0].between?(0,4) && new_position[1].between?(0,4) &&
-       keys[new_position[0]][new_position[1]]
+      keys[new_position[0]][new_position[1]]
     then
       position = [new_position[0],new_position[1]]
     end
