@@ -1,5 +1,3 @@
-sum = 0
-
 while line = gets do
   # Parse a line, and get , id and hash.
   name, id, hash = line.strip.match(/^(\D+)(\d+)\[(\w+)\]$/).captures
@@ -10,16 +8,12 @@ while line = gets do
   dict = Hash.new(0)
   letters.chars.each { |c| dict[c] += 1}
 
-  # Sort the hash keys by their value count, otherwise according to alphabet.
+  # Sort the hash keys by their value count, otherwise according to alphabet...
   sorted = dict.sort { |a,b|
-    if a[1] == b[1]
-      a <=> b
-    else
-      b[1] <=> a[1]
-    end
-  }.slice(0,5).to_h # But only take the first five.
+    a[1] == b[1] ? a <=> b : b[1] <=> a[1]
+  }.slice(0,5).to_h  # ... but only take the first five.
 
-  # Get the check by joining 
+  # Get the check by joining the key characters.
   check = sorted.keys.join
 
   # If hash equals checksum...

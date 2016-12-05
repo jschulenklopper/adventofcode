@@ -19,7 +19,7 @@ while line = gets do
     end
   }.slice(0,5).to_h # But only take the first five.
 
-  # Get the check by joining 
+  # Get the check by joining the characters of the keys.
   check = sorted.keys.join
 
   # Add id to sum if the room hash equals the checksum.
