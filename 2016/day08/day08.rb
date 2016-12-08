@@ -13,7 +13,7 @@ while line = gets do
   end
 end
 
-puts screen.join { |row| row.join }.count("#")
+puts screen.flatten.count("#")
 
 screen.each do |row|
   puts row.join
