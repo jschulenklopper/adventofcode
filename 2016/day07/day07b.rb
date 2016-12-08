@@ -1,6 +1,5 @@
 count = 0
 hypernet = /\[[a-z]+\]/
-aba = /([a-z])((?!\1).)\1/
 ababab = /([a-z])((?!\1).)\1[a-z]*\[[a-z]*\2\1\2/
 
 while line = gets do
