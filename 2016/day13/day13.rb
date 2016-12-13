@@ -7,12 +7,6 @@ class Maze  # A collection of cells.
     @input = input
   end
 
-  def distance(from_location, to_location)
-    from_x, from_y = from_location[0], from_location[1]
-    to_x, to_y = to_location[0], to_location[1]
-    Math.sqrt((from_x - to_x)**2 + (from_y - to_y)**2)
-  end
-  
   def add_cell(location)  # Returns the cell that is generated.
     x, y = location[0], location[1]
    
