@@ -9,17 +9,16 @@ end
 t = 0
 all_right = false
 
+# Test whether all discs are in correct position when starting on t.
 until all_right
-  right_time = ""  # String of bits, "1" is correct time. 
-
-  # Test whether all discs are in correct position when starting on t.
+  correct = 0
   discs.each_with_index do |disc, index|
-    # Test if starting position plus time+1 modulo number of positions equals 0.
-    right_time += ((disc[0] + t+1+index) % disc[1]) == 0 ? "1" : "0"
+    # Test if starting position plus index+1+time modulo number of positions equals 0.
+    correct += 1 if ((disc[0] + t+index+1) % disc[1]) == 0
   end
 
   # Time is right if all positions were right.
-  all_right = right_time.chars.count { |c| c == "1" } == right_time.length
+  all_right = (correct == discs.length) ? true : false
 
   t += 1 unless all_right
 end
