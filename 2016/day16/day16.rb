@@ -1,5 +1,5 @@
-disk_length = 272     # First part of puzzle.
-# disk_length = 35651584  # Second part of puzzle.
+# disk_length = 272     # First part of puzzle.
+disk_length = 35651584  # Second part of puzzle.
 
 input = gets.strip
 output = input
@@ -14,8 +14,8 @@ end
 # Compute checksum for disk value.
 checksum = output[0, disk_length]
 loop do
-  p pairs = checksum.scan(/.{1,2}/)
-  p checksum = pairs.map { |p| (p == "11" || p == "00") ? "1" : "0" }.join
+  dict = { '11' => 1, '00' => '1', '10' => '0', '01' => '0' }
+  checksum = checksum.gsub(/.{1,2}/) { |match| dict[match.to_s] }
   break if checksum.length.odd?
 end
 
