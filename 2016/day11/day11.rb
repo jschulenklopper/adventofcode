@@ -23,8 +23,13 @@ class Factory < Hash
     @cost = 0  # TODO Add some measure of the cost of the last step.
   end
 
-  def set_distance
-    @distance = 0  # TODO Some function towards goal.
+  def distance!
+    dist = 0
+    # Compute distance of objects to goal floor.
+    @floors.keys.each do |floor|
+      dist += @floors[floor].length * 2**(floor - @goal).abs
+    end
+    @distance = dist
   end
 
   def objects
@@ -44,15 +49,11 @@ class Factory < Hash
       # First select on type (G or M), then select materials (first two characters).
       gen_materials = items.select { |t| t[2] == "G" }.map { |m| m[0,2] }
       chip_materials = items.select { |t| t[2] == "M" }.map { |m| m[0,2] }
-      # A chip will be fried if on the same floor with another generator
-      # while not connected to 'own' generator.
-
       # Create list of all combinations generator-chip.
-      combinations = gen_materials.product(chip_materials)
-
+      combis = gen_materials.product(chip_materials)
       # See whether there are unprotected chips.
-      combinations.select! { |gen, chip| (gen != chip) && !combinations.include?([chip, chip]) }
-      valid = false if combinations.length > 0
+      combis.select! { |gen, chip| (gen != chip) && !combis.include?([chip, chip]) }
+      valid = false if combis.length > 0
     end
     valid
   end
@@ -74,6 +75,9 @@ class Factory < Hash
       items.each { |item| move.floors[move.at] -= [item] }  # Remove the items from one floor.
       move.at = new_floor
       items.each { |item| move.floors[move.at] += [item] }  # ... and at it to the other.
+      
+      # Set distance on this move.
+      move.distance!
       move
     end
     possible_moves
@@ -135,19 +139,18 @@ end
 
 factory.at = 1          # The elevator starts at the first floor.
 factory.cost = 0        # It was cheap to get here.
-factory.distance = 100  # TODO Compute better distance for current state.
 factory.goal = 4        # This is where all things need to go to.
 
-puts "-\nFactory"
-puts factory
+factory.distance!    # Compute distance for current state.
 
-# TODO First try it with BFS. Then later promote the logic to A*.
+# First try it with BFS. Then later promote the logic to A*.
 
 # Add start situation to queue, and path (being start situation).
 queue = [ [factory, [factory]] ]
 
 while ! queue.empty?
   # Get new state from queue.
+  queue.sort! { |a, b| a[0].distance <=> b[0].distance }
   current_state, path = queue.shift
 
   # If we haven't seen this before...
@@ -174,6 +177,7 @@ end
 if path.last.goal_reached?
   puts path.length - 1
 
+  puts "steps"
   path.each_with_index do |f, index|
     puts index
     puts f
@@ -181,5 +185,3 @@ if path.last.goal_reached?
 else
   puts "no solution"
 end
-
-
