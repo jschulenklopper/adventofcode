@@ -46,13 +46,13 @@ class Factory < Hash
       chip_materials = items.select { |t| t[2] == "M" }.map { |m| m[0,2] }
       # A chip will be fried if on the same floor with another generator
       # while not connected to 'own' generator.
-      # So, we test for generators that are not in the chip list...
-      if gen_materials.select { |m| !chip_materials.include?(m) }.length > 0 &&
-         # ... and there actually are chips present..
-         chip_materials.length > 0
-      then
-        valid = false
-      end
+
+      # Create list of all combinations generator-chip.
+      combinations = gen_materials.product(chip_materials)
+
+      # See whether there are unprotected chips.
+      combinations.select! { |gen, chip| (gen != chip) && !combinations.include?([chip, chip]) }
+      valid = false if combinations.length > 0
     end
     valid
   end
@@ -105,7 +105,7 @@ class Factory < Hash
     # Print footer line, with some stats.
     string += "\n" + "----" * (columns.length + 1)
     string += "\ncost: %3d, dist: %3d" % [@cost, @distance]
-    string += "\n"
+    string += "\n\n"
   end
 
 end
@@ -144,11 +144,11 @@ puts factory
 # TODO First try it with BFS. Then later promote the logic to A*.
 
 # Add start situation to queue, and path (being start situation).
-queue = [ [factory, 0] ]
+queue = [ [factory, [factory]] ]
 
 while ! queue.empty?
   # Get new state from queue.
-  current_state, length = queue.shift
+  current_state, path = queue.shift
 
   # If we haven't seen this before...
   if ! visited.include?(current_state)
@@ -166,10 +166,20 @@ while ! queue.empty?
       visited.include?(f)
     end
     possible_moves.each do |f|
-      queue.push([f, length + 1])
+      queue.push([f, path + [f]])
     end
   end
 end
 
-puts current_state
-puts length
+if path.last.goal_reached?
+  puts path.length - 1
+
+  path.each_with_index do |f, index|
+    puts index
+    puts f
+  end
+else
+  puts "no solution"
+end
+
+
