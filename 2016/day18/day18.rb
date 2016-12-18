@@ -19,7 +19,10 @@ input = gets.strip
 
 grid = [input]  # Fill grid with first line.
 
-until grid.length == 40
+ROWS = 40
+# ROWS = 400000  # Part two of puzzle.
+
+until grid.length == ROWS
   grid << new_row(grid.last)
 end
 
