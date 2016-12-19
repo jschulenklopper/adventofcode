@@ -67,11 +67,5 @@ while line = gets
   next if input.length == 0
 
   solutions = solve_maze(input)
-  max_length = 0
-  solutions.each do |s|
-    if s.length > max_length
-      max_length = s.length
-    end
-  end
-  puts max_length
+  puts solutions.max_by(&:length).length
 end
