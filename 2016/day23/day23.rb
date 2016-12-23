@@ -38,8 +38,6 @@ class Computer
     # Load the next instruction from the PC location.
     instruction = @instructions[@pc]
     
-    puts "execute: %s('%s','%s')" % [instruction.instruction, instruction.param1, instruction.param2]
-
     # This assumes that evaluating the instruction returns the PC.
     @pc = eval("%s('%s','%s')" % [instruction.instruction, instruction.param1, instruction.param2])
   end
@@ -101,21 +99,14 @@ computer = Computer.new
 computer.load(instructions)
 computer.registers = ["a", "b", "c", "d"]
 
-computer.registers["a"] = 7
+computer.registers["a"] = 7  # Make it 12 for part 2.
 
 # Run program.
 pc = 0
 while true
-  puts "---"
-  puts "pc: %d" % pc
-  puts "registers:\n" + computer.registers.map { |r| " " + r.to_s + ": " + computer.registers[r].to_s + "\n" }.join
-  puts "instructions:\n" + computer.instructions.map { |i| " " + i.inspect + "\n" }.join
-  puts
   pc = computer.execute
 
   break if !pc
-  puts
-  puts "new pc: %d" % pc
   break if not pc.between?(0, instructions.length-1)
 end
 
