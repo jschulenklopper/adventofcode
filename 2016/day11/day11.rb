@@ -16,13 +16,36 @@ class Factory < Hash
   end
 
   def ==(other_factory)
+    puts "in =="
     # Consider two factories equal if the sorted items per floor are equal.
-    self_string =  "E" + @at.to_s + @floors.map { |f,i| f.to_s + i.sort.join }.join
-    other_string = "E" + other_factory.at.to_s + other_factory.floors.map { |f,i| f.to_s + i.sort.join }.join
-    self_string == other_string
+    p self_string =  "E" + @at.to_s + @floors.map { |f,i| f.to_s + i.sort.join }.join
+    p other_string = "E" + other_factory.at.to_s + other_factory.floors.map { |f,i| f.to_s + i.sort.join }.join
+    return true if self_string == other_string
 
-    # This does not acknowledge floors with items in other order, so is too limited..
-    # self.floors == other_factory.floors
+    # Consider two factories equal if pairs are on the same floors.
+    self_pairs = @floors.keys.select { |floor|
+      @floors[floor].join(" ").match(/(\w\w).*\1/)
+    }.sort
+    other_pairs = other_factory.floors.keys.select { |floor|
+      other_factory.floors[floor].join(" ").match(/(\w\w).*\1/)
+    }.sort
+    
+    if self_pairs.length > 0
+      # return true if self_pairs == other_pairs
+      p self_pairs
+      p other_pairs
+    end
+    
+    # Remove pairs from same floor from strings
+    p reduced_self_string =  "E" + @at.to_s + @floors.map {
+      |f,i| f.to_s + i.sort.join.gsub(/(\w\w).*\1/, "x")
+    }.join
+    p reduced_other_string =  "E" + other_factory.at.to_s + other_factory.floors.map {
+      |f,i| f.to_s + i.sort.join.gsub(/(\w\w).*\1/, "x")
+    }.join
+
+    return reduced_self_string == reduced_other_string
+    # return self_string == other_string
   end
 
   def distance!
@@ -61,6 +84,7 @@ class Factory < Hash
   end
 
   def possible_moves
+    puts "possible_moves"
     # Get list of possible locations for elevator: one above/below current floor..
     possible_floors = @floors.keys.select { |f| [@at+1,@at-1].include?(f) }
     # Get list of item combinations that may be moved.
@@ -68,6 +92,22 @@ class Factory < Hash
 
     # Create a list of possible future states.
     possible_changes = possible_floors.product(possible_loads)
+
+=begin
+    sub_optimal = possible_changes.select { |change|
+      materials = change[1]  # Elevator is change[0]
+      if materials.length == 2 and materials[0][0,2] == materials[1][0,2]
+        true
+      else
+        false
+      end
+    }.sort { |a,b| b[0] <=> a[0] }  # Sort on elevator.
+
+    sub_optimal.shift if sub_optimal.length > 1 
+
+    possible_changes.reject! { |change| sub_optimal.include?(change) }
+
+=end
 
     # Make new moves (states) from changes.
     possible_factories = possible_changes.map do |new_floor, items|
@@ -157,14 +197,12 @@ while !queue.empty?
   puts "queue.length: %d" % queue.length
 
   # Sort queue on current cost plus remaining cost (estimate).
-  queue.sort! { |a, b| a.cost + 2*a.distance <=> b.cost + 2*b.distance }
+  queue.sort! { |a, b| a.cost + a.distance <=> b.cost + b.distance }
 
   # current_state, path = queue.shift  # Get first item from queue.
   current_state = queue.shift  # Get first item from queue.
 
-  puts "current_state"
   puts current_state
-  puts "/current_state"
 
   # Remember current_state as visited.
   visited << current_state
@@ -178,35 +216,22 @@ while !queue.empty?
 
   # Create all possible states.
   possible_states = current_state.possible_moves
-  # puts "2.possible_states"
-  # possible_states.each { |f| puts f }
-  # puts possible_states.length
-  # puts "/possible_states"
 
   # Select all valid moves.
   valid_states = possible_states.select { | move| move.valid?  }
-  # puts "3.valid_states:"
-  # valid_states.each { |f| puts f }
-  # puts valid_states.length
-  # puts "/valid_states"
 
   # Select only new ones.
   valid_new_states = valid_states.reject { |f|
-    # puts "  in reject()"
     queue.include?(f) || visited.include?(f)
   }
-  # puts "4.valid_new_states:"
-  # valid_new_states.each { |f| puts f }
-  # puts valid_new_states.length
-  # puts "/valid_new_states"
 
   # Add all these moves to the queue.
   valid_new_states.each do |f|
     queue.push(f)
-    # puts "5.queue.length: %d" % queue.length
   end
-  # puts "6.visited.length: %d" % visited.length
 end
+
+puts "visited.length: %d" % visited.length
 
 # if path.last.goal_reached?
 if current_state.goal_reached?
