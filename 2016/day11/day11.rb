@@ -16,28 +16,26 @@ class Factory < Hash
   end
 
   def ==(other_factory)
-    Marshal.dump(self) == Marshal.dump(other_factory)
-  end
+    # Consider two factories equal if the sorted items per floor are equal.
+    self_string =  "E" + @at.to_s + @floors.map { |f,i| f.to_s + i.sort.join }.join
+    other_string = "E" + other_factory.at.to_s + other_factory.floors.map { |f,i| f.to_s + i.sort.join }.join
+    self_string == other_string
 
-  def set_cost
-    @cost = 0  # TODO Add some measure of the cost of the last step.
+    # This does not acknowledge floors with items in other order, so is too limited..
+    # self.floors == other_factory.floors
   end
 
   def distance!
     dist = 0
     # Compute distance of objects to goal floor.
-    @floors.keys.each do |floor|
-      dist += @floors[floor].length * 2**(floor - @goal).abs
-    end
+    @floors.select { |floor, items| dist += items.length * (floor - @goal).abs }
     @distance = dist
   end
 
   def objects
-    objects = []
-    @floors.keys.each do |floor|  # TODO Perhaps a cleaner collect could do.
-      objects += @floors[floor]
-    end
-    objects
+    list = []
+    @floors.select { |floor, items| list += items }
+    list
   end
 
   def valid?
@@ -67,24 +65,30 @@ class Factory < Hash
     possible_floors = @floors.keys.select { |f| [@at+1,@at-1].include?(f) }
     # Get list of item combinations that may be moved.
     possible_loads = (1..2).flat_map { |size| @floors[@at].combination(size).to_a }
+
     # Create a list of possible future states.
     possible_changes = possible_floors.product(possible_loads)
-    possible_moves = possible_changes.map do |new_floor, items|
+
+    # Make new moves (states) from changes.
+    possible_factories = possible_changes.map do |new_floor, items|
       move = self.duplicate  # Duplicate current factory state.
       
       items.each { |item| move.floors[move.at] -= [item] }  # Remove the items from one floor.
       move.at = new_floor
-      items.each { |item| move.floors[move.at] += [item] }  # ... and at it to the other.
+      items.each { |item| move.floors[move.at] += [item] }  # ... and add it to the other.
       
       # Set distance on this move.
       move.distance!
+      # Increase the cost, just counting the additional one step.
+      move.cost += 1
+
       move
     end
-    possible_moves
+    possible_factories
   end
 
   def valid_moves
-    possible_moves.select { | move| move.valid? }
+    self.possible_moves.select { | move| move.valid?  }
   end
 
   def to_s
@@ -96,6 +100,9 @@ class Factory < Hash
 
     # Print header line.
     string = "====" * (columns.length + 1)
+
+    # Print factory signature.
+    puts "hash:" + "E" + @at.to_s + @floors.map { |f,i| "F" + f.to_s + i.sort.join }.join
 
     # Starting from the top floor, print the details per floor.
     @floors.keys.reverse.each do |floor|
@@ -115,9 +122,9 @@ class Factory < Hash
 end
 
 factory = Factory.new
-path = Array.new   # A list of factory states, representing actual moves.
-queue = Array.new  # A list of moves possibly to be made.
-visited = Array.new   # A list of states already considered.
+path = Array.new     # A list of factory states, representing actual moves.
+queue = Array.new    # A list of moves possibly to be made.
+visited = Array.new  # A list of states already considered.
 
 # Read the input file, set up the factory.
 floor = 0
@@ -137,49 +144,74 @@ while line = gets do
   end
 end
 
-factory.at = 1          # The elevator starts at the first floor.
-factory.cost = 0        # It was cheap to get here.
-factory.goal = 4        # This is where all things need to go to.
+factory.at = 1     # The elevator starts at the first floor.
+factory.cost = 0   # It was cheap to get here.
+factory.goal = 4   # This is where all things need to go to.
+factory.distance!  # Compute distance for current state.
 
-factory.distance!    # Compute distance for current state.
+# queue = [ [factory, [factory]] ]  # Queue starts with starting position.
+queue = [ factory ]  # Queue starts with starting position.
+current_state = nil
 
-# First try it with BFS. Then later promote the logic to A*.
+while !queue.empty?
+  puts "queue.length: %d" % queue.length
 
-# Add start situation to queue, and path (being start situation).
-queue = [ [factory, [factory]] ]
+  # Sort queue on current cost plus remaining cost (estimate).
+  queue.sort! { |a, b| a.cost + 2*a.distance <=> b.cost + 2*b.distance }
 
-while ! queue.empty?
-  # Get new state from queue.
-  queue.sort! { |a, b| a[0].distance <=> b[0].distance }
-  current_state, path = queue.shift
+  # current_state, path = queue.shift  # Get first item from queue.
+  current_state = queue.shift  # Get first item from queue.
 
-  # If we haven't seen this before...
-  if ! visited.include?(current_state)
-    # ... add it to the list of visited states.
-    visited << current_state
+  puts "current_state"
+  puts current_state
+  puts "/current_state"
 
-    # Check if state is goal.
-    if current_state.goal_reached?
-      "goal reached"
-      break
-    end
-
-    # Add all possible next valid moves to queue, if we haven't seen these earlier.
-    possible_moves = current_state.valid_moves.reject do |f|
-      visited.include?(f)
-    end
-    possible_moves.each do |f|
-      queue.push([f, path + [f]])
-    end
+  # Remember current_state as visited.
+  visited << current_state
+  
+  # Test is current state meets goal.
+  if current_state.goal_reached?
+    puts current_state
+    puts "goal reached!"
+    break
   end
+
+  # Create all possible states.
+  possible_states = current_state.possible_moves
+  # puts "2.possible_states"
+  # possible_states.each { |f| puts f }
+  # puts possible_states.length
+  # puts "/possible_states"
+
+  # Select all valid moves.
+  valid_states = possible_states.select { | move| move.valid?  }
+  # puts "3.valid_states:"
+  # valid_states.each { |f| puts f }
+  # puts valid_states.length
+  # puts "/valid_states"
+
+  # Select only new ones.
+  valid_new_states = valid_states.reject { |f|
+    # puts "  in reject()"
+    queue.include?(f) || visited.include?(f)
+  }
+  # puts "4.valid_new_states:"
+  # valid_new_states.each { |f| puts f }
+  # puts valid_new_states.length
+  # puts "/valid_new_states"
+
+  # Add all these moves to the queue.
+  valid_new_states.each do |f|
+    queue.push(f)
+    # puts "5.queue.length: %d" % queue.length
+  end
+  # puts "6.visited.length: %d" % visited.length
 end
 
-if path.last.goal_reached?
-  puts path.length - 1
-
-  puts "steps"
+# if path.last.goal_reached?
+if current_state.goal_reached?
   path.each_with_index do |f, index|
-    puts index
+    puts "step %d:" % index
     puts f
   end
 else
