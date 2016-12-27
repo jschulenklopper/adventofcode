@@ -16,36 +16,34 @@ class Factory < Hash
   end
 
   def ==(other_factory)
-    puts "in =="
     # Consider two factories equal if the sorted items per floor are equal.
-    p self_string =  "E" + @at.to_s + @floors.map { |f,i| f.to_s + i.sort.join }.join
-    p other_string = "E" + other_factory.at.to_s + other_factory.floors.map { |f,i| f.to_s + i.sort.join }.join
-    return true if self_string == other_string
+    self_string =  "E" + @at.to_s + @floors.map { |f,i| f.to_s + i.sort.join }.join
+    other_string = "E" + other_factory.at.to_s + other_factory.floors.map { |f,i| f.to_s + i.sort.join }.join
+    # return true if self_string == other_string
 
-    # Consider two factories equal if pairs are on the same floors.
-    self_pairs = @floors.keys.select { |floor|
-      @floors[floor].join(" ").match(/(\w\w).*\1/)
-    }.sort
-    other_pairs = other_factory.floors.keys.select { |floor|
-      other_factory.floors[floor].join(" ").match(/(\w\w).*\1/)
-    }.sort
-    
-    if self_pairs.length > 0
-      # return true if self_pairs == other_pairs
-      p self_pairs
-      p other_pairs
-    end
-    
-    # Remove pairs from same floor from strings
-    p reduced_self_string =  "E" + @at.to_s + @floors.map {
-      |f,i| f.to_s + i.sort.join.gsub(/(\w\w).*\1/, "x")
-    }.join
-    p reduced_other_string =  "E" + other_factory.at.to_s + other_factory.floors.map {
-      |f,i| f.to_s + i.sort.join.gsub(/(\w\w).*\1/, "x")
+    self_memo = Array.new
+    p self_compressed = "E" + @at.to_s + @floors.map { |floor, items|
+      "-" + floor.to_s + "-" +
+        items.map { |item|
+          if ! self_memo.find_index(item[0,2])
+            self_memo << item[0,2]
+          end
+          self_memo.find_index(item[0,2])
+        }.join
     }.join
 
-    return reduced_self_string == reduced_other_string
-    # return self_string == other_string
+    other_memo = Array.new
+    p other_compressed = "E" + other_factory.at.to_s + other_factory.floors.map { |floor, items|
+      "-" + floor.to_s + "-" +
+        items.map { |item|
+          if ! other_memo.find_index(item[0,2])
+            other_memo << item[0,2]
+          end
+          other_memo.find_index(item[0,2])
+        }.join
+    }.join
+
+    return self_compressed == other_compressed
   end
 
   def distance!
