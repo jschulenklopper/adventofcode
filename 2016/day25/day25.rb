@@ -37,14 +37,12 @@ class Computer
     instruction = @instructions[@pc]
     
     # This assumes that evaluating the instruction returns the PC.
-    # puts "%s('%s','%s')" % [instruction.instruction, instruction.param1, instruction.param2]
     result = eval("%s('%s','%s')" % [instruction.instruction, instruction.param1, instruction.param2])
     [result[0], result[1]]  # [@pc, out]
   end
 
   def out(p1, p2)
     output_value = @registers[p1] ? @registers[p1] : p1.to_i
-    puts "out: %d" % output_value
     @pc += 1
     [@pc, output_value]
   end
@@ -83,7 +81,6 @@ class Computer
 end
 
 def next_expected_digit(last)
-  puts "next_expected_digit(%d): %d" % [last, (last == 1 || last == nil) ? 0 : 1]
   (last == 1 || last == nil) ? 0 : 1
 end
 
@@ -97,29 +94,19 @@ next_a = 0
 
 while next_a <= 1000  # Maximum number for a to try.
   # Initialize loop.
-  puts "new loop, a = %d" % next_a
   pattern = ""
-
-  pattern_seen = false
   last_out = 1  # Simulate last digit as 1, so that next digit (and pattern) starts with 0.
 
   # Boot computer.
-  puts "boot computer"
   computer = Computer.new
   computer.load(instructions)
   computer.registers = ["a", "b", "c", "d"]
   computer.registers["a"] = next_a  # Load next_a into register for a.
 
   # Run program.
-  puts "run program"
   pc = 0
 
-  until pattern.length >= 32
-    puts pattern
-
-    # puts "--- (new instruction)"
-    # puts "pc: %d [%s]" % [pc, computer.registers.map { |r| " " + r.to_s + ": " + computer.registers[r].to_s }.join]
-
+  until pattern.length >= 16
     result = computer.execute
     pc = result[0]
     out = result[1]
@@ -129,18 +116,17 @@ while next_a <= 1000  # Maximum number for a to try.
     next if out == nil
 
     if out == next_expected_digit(last_out)
-      puts "next_expected_digit OK"
+      # This is going all right (so far).
       pattern << out.to_s
       last_out = out
     else
-      puts "next_expected_digit NOK"
       # Apparently, we've seen other output than expected, so next a.
       pattern = ""
       break
     end
   end
   
-  if pattern.length >= 32
+  if pattern.length >= 16
     puts next_a
     exit
   end
