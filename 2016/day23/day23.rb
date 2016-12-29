@@ -29,8 +29,6 @@ class Computer
 
   def registers=(registers)
     registers.each { |r| @registers[r] = 0 }
-    # For second part of day 12, uncomment next line.
-    # @registers["c"] = 1
   end
 
   # Executes instructions at current PC.
@@ -99,14 +97,12 @@ computer = Computer.new
 computer.load(instructions)
 computer.registers = ["a", "b", "c", "d"]
 
-computer.registers["a"] = 7  # Make it 12 for part 2.
+computer.registers["a"] = 6
 
 # Run program.
 pc = 0
 while true
   pc = computer.execute
-
-  break if !pc
   break if not pc.between?(0, instructions.length-1)
 end
 
