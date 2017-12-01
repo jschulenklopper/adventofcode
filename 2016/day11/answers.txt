@@ -1,0 +1,5 @@
+four-items: 11, 0m0s240
+six-items: 25, 4m16
+eight-items: 
+ten-items (input.txt): 47 (after hours of computing).
+fourteen-items (inputb.txt): 71 (by head).
