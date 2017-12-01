@@ -19,31 +19,34 @@ class Factory < Hash
     # Consider two factories equal if the sorted items per floor are equal.
     self_string =  "E" + @at.to_s + @floors.map { |f,i| f.to_s + i.sort.join }.join
     other_string = "E" + other_factory.at.to_s + other_factory.floors.map { |f,i| f.to_s + i.sort.join }.join
-    # return true if self_string == other_string
+    return true if self_string == other_string
 
+    # Consider two factories equal if number of unique elements per floor are equal.
     self_memo = Array.new
-    p self_compressed = "E" + @at.to_s + @floors.map { |floor, items|
-      "-" + floor.to_s + "-" +
+    self_compressed = "E" + @at.to_s + @floors.map { |floor, items|
+      "-" + floor.to_s + ":" +
         items.map { |item|
           if ! self_memo.find_index(item[0,2])
             self_memo << item[0,2]
           end
           self_memo.find_index(item[0,2])
-        }.join
+        }.length.to_s  # sort.uniq.join
     }.join
 
     other_memo = Array.new
-    p other_compressed = "E" + other_factory.at.to_s + other_factory.floors.map { |floor, items|
+    other_compressed = "E" + other_factory.at.to_s + other_factory.floors.map { |floor, items|
       "-" + floor.to_s + "-" +
         items.map { |item|
           if ! other_memo.find_index(item[0,2])
             other_memo << item[0,2]
           end
           other_memo.find_index(item[0,2])
-        }.join
+        }.length.to_s  # sort.uniq.join
     }.join
 
-    return self_compressed == other_compressed
+    return true if self_compressed == other_compressed
+
+    return false
   end
 
   def distance!
@@ -82,7 +85,7 @@ class Factory < Hash
   end
 
   def possible_moves
-    puts "possible_moves"
+    # puts "possible_moves"
     # Get list of possible locations for elevator: one above/below current floor..
     possible_floors = @floors.keys.select { |f| [@at+1,@at-1].include?(f) }
     # Get list of item combinations that may be moved.
@@ -91,21 +94,21 @@ class Factory < Hash
     # Create a list of possible future states.
     possible_changes = possible_floors.product(possible_loads)
 
-=begin
-    sub_optimal = possible_changes.select { |change|
-      materials = change[1]  # Elevator is change[0]
-      if materials.length == 2 and materials[0][0,2] == materials[1][0,2]
-        true
-      else
-        false
+    # If you're moving pairs, it doesn't matter which pair.
+    # So if there's a pair in the move, remove all the other pairs.
+    pairs = possible_changes.select { |change|
+      floor = change[0]
+      items = change[1]
+      change if items.length == 2 && items.map { |item| item[0,2] }.uniq.length == 1
+    }
+    
+    if pairs.length > 1                  # If there's more than one pair...
+      pairs.sort! {|a,b| b[0] <=> a[0]}  # ... sort pairs per floor (so we'll keep the move upwards)
+      pairs.shift                        # ... remove the first one 
+      pairs.each do |pair|               # ... and remove all the others from possible_changes.
+        possible_changes.delete(pair)
       end
-    }.sort { |a,b| b[0] <=> a[0] }  # Sort on elevator.
-
-    sub_optimal.shift if sub_optimal.length > 1 
-
-    possible_changes.reject! { |change| sub_optimal.include?(change) }
-
-=end
+    end
 
     # Make new moves (states) from changes.
     possible_factories = possible_changes.map do |new_floor, items|
@@ -200,7 +203,7 @@ while !queue.empty?
   # current_state, path = queue.shift  # Get first item from queue.
   current_state = queue.shift  # Get first item from queue.
 
-  puts current_state
+  # puts current_state
 
   # Remember current_state as visited.
   visited << current_state
