@@ -39,13 +39,11 @@ class Bot
   end
 
   def receives(value)
-    puts "%s.receives" % @name
     if @name =~ /bot/ && @chips.length < 2 
       @chips << value
     elsif @name =~ /output/
       @chips == [value]
     end
-    puts "%s" % @chips.to_s
   end
 
   def set_destinations(lo_dest, hi_dest)
@@ -54,14 +52,11 @@ class Bot
   end
 
   def give!
-    puts "%s.give!" % @name
     @lo_dest.receives(@chips.sort.first)
     @hi_dest.receives(@chips.sort.last)
   end
 
   def can_give?
-    puts "%s.can_give?" % @name
-    puts "%s" % (@chips.length == 2 && ! @name =~ "output")
     @chips.length == 2 && @name =~ /bot/
   end
 end
@@ -83,26 +78,15 @@ while line = gets do
   end
 end
 
-# Print out the factory details before the action.
-puts "factory in begin:"
-puts factory.details
-
 # Let the bots do their thing.
 while true do
-factory.each_pair do |bot_name, bot|
-  if bot.chips == [17, 61]
-    puts bot_name
-    exit
+  factory.each_pair do |bot_name, bot|
+    if bot.chips == [17, 61]
+      puts bot_name
+      exit
+    end
+    if bot.can_give?
+      bot.give!
+    end
   end
-  if bot.can_give?
-    bot.give!
-  end
-  puts "%s, %s, %s" % [factory["output-1"].chips, factory["output-1"].chips, factory["output-2"].chips]
 end
-end
-
-# And display it after the action.
-puts "==="
-puts "factory at the end:"
-puts factory.details
-
