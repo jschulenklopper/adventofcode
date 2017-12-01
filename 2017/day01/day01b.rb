@@ -1,8 +1,7 @@
 while line = gets
   digits = line.strip.chars.map(&:to_i)
-  sum = 0
-  digits.each.with_index do |digit, index| 
-    sum += digit if digit == digits[(index + digits.length / 2) % digits.length]
-  end
-  puts sum
+  puts digits.reject.each_with_index { |digit, i|
+    # Replace `digits.length/2` by `1` for first puzzle.
+    digits[i] != digits[ (i + digits.length/2) % digits.length]
+  }.sum
 end
