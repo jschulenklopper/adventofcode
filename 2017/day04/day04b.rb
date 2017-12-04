@@ -1,6 +1,3 @@
-valid = 0
-while line = gets
-  words = line.strip.split(" ")
-  valid += 1 if words.map { |w| w.chars.sort }.uniq.length == words.length
-end
-puts valid
+puts readlines.count { |line| 
+  line.split.map {|words| words.chars.sort}.uniq.size == line.split.size
+}
