@@ -1,3 +1,1 @@
-puts readlines.reduce(0) { |sum, line| words = line.strip.split
-  (words.uniq.length == words.length) ? sum+1 : sum
-}
+puts readlines.reduce(0) { |s, l| (l.strip.split.uniq.size == l.strip.split.size) ? s+1 : s }
