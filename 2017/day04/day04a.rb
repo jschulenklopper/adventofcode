@@ -1,6 +1,3 @@
-valid = 0
-while line = gets
-  words = line.strip.split(" ")
-  valid += 1 if words.uniq.length == words.length
-end
-puts valid
+puts readlines.reduce(0) { |sum, line| words = line.strip.split
+  (words.uniq.length == words.length) ? sum+1 : sum
+}
