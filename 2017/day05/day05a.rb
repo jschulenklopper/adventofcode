@@ -1,13 +1,11 @@
-offsets = readlines.map! { |o| o.strip.to_i }
+offsets = readlines.map! { |offset| offset.to_i }
 
-index = 0
-count = 0
+index, count = 0, 0
 
-until index < 0 || index >= offsets.length do
-  count += 1
-  offset = offsets[index]
+while offset = offsets[index] do
   offsets[index] += 1
   index += offset
+  count += 1
 end
 
-p count
+puts count
