@@ -1,5 +1,3 @@
-require 'pp'
-
 def weigh_tree(programs, id, level = 0)
   node = programs[id]
 
