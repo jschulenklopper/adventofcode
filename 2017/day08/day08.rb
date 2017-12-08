@@ -1,22 +1,18 @@
+# Create a hash to store registers, default value of new element is 0.
 registers = Hash.new(0)
 largest = 0
 
-while instruction = gets
-  instruction.match(/(?<reg>\w+)\s(?<op>\w+)\s(?<value>(\w|-)+)\sif\s(?<var>\w+)\s(?<rest>.+)/) do |match|
-    # Transform instruction into valid Ruby expression using `registers` hash.
-    register = "registers['%s']" % match[:reg]
-    operator = match[:op] == "inc" ? "+=" : "-="
-    value = match[:value]
-    var = "registers['%s']" % match[:var]
-    rest = match[:rest]
+while line = gets
+  # The line is almost a valid instruction in Ruby. We just need to 
+  # change the variables into register references, and inc/dec to += and -=.
+  instruction = line.gsub(/(\w+) (inc|dec)/, "registers['\\1'] \\2")
+                    .gsub(/if (\w+)/, "if registers['\\1']")
+                    .gsub(/ inc /, " += ")
+                    .gsub(/ dec /, " -= ")
 
-    # Rebuild instruction.
-    instr = "%s %s %s if %s %s" % [register, operator, value, var, rest]
-
-    # Evaluate instruction and store largest, if a new value.
-    result = eval(instr)
-    largest = result if result && result > largest
-  end
+  # Evaluate the instruction and store largest, if a new value.
+  result = eval(instruction) || largest
+  largest = result if result > largest
 end
 
 puts "Highest at the end: %s" % registers.values.max
