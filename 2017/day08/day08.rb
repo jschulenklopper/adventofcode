@@ -1,32 +1,21 @@
-registers = []
+registers = Hash.new(0)
 largest = 0
 
-# There's an ugly hack here, in that all registers are stored in the global
-# scope, and as a global variable. :scream: FIXME
-
 while instruction = gets
-  instruction.match(/^(?<reg>\w+)\s(?<op>\w+)\s(?<value>.*)\sif\s(?<cond>(?<var>\w+).*)/) do |match|
-    register = "$" + match[:reg]
+  instruction.match(/(?<reg>\w+)\s(?<op>\w+)\s(?<value>(\w|-)+)\sif\s(?<var>\w+)\s(?<rest>.+)/) do |match|
+    # Transform instruction into valid Ruby expression using `registers` hash.
+    register = "registers['%s']" % match[:reg]
     operator = match[:op] == "inc" ? "+=" : "-="
-    value = match[:value].to_i
-    cond = match[:cond]
-    var = "$" + match[:var]
+    value = match[:value]
+    var = "registers['%s']" % match[:var]
+    rest = match[:rest]
 
-    instr = "%s %s %s" % [register, operator, value]
+    instr = "%s %s %s if %s %s" % [register, operator, value, var, rest]
 
-    eval("%s ||= 0" % register)
-    eval("%s ||= 0" % var)
-
-    execute = eval("$%s" % cond) # UGLY, because of the "$" before the variable in the condition.
-
-    if execute
-      result = eval("%s" % instr)
-      registers.push(register)
-
-      largest = (result > largest) ? result : largest
-    end
+    result = eval(instr)
+    largest = result if result && result > largest
   end
 end
 
-puts "Highest now: " + registers.map { |reg| eval(reg) }.max.to_s
-puts "Highest ever: " + largest.to_s
+puts "Highest at the end: %s" % registers.values.max
+puts "Highest ever: %s" % largest
