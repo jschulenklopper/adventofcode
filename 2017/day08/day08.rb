@@ -10,7 +10,7 @@ while instruction = gets
     var = "registers['%s']" % match[:var]
     rest = match[:rest]
 
-    # Rebuild instruction
+    # Rebuild instruction.
     instr = "%s %s %s if %s %s" % [register, operator, value, var, rest]
 
     # Evaluate instruction and store largest, if a new value.
