@@ -1,11 +1,3 @@
-def remove_cancels(string)
-  string.gsub(/!./, "")
-end
-
-def remove_garbage(string)
-  string.gsub(/<.*?>/, "<>")
-end
-
 def count(level, string)
   return 0 if string == ""
   first = string[0]
@@ -21,10 +13,13 @@ def count(level, string)
 end
 
 while line = gets
-  pretty = remove_cancels(line)
-  clean = remove_garbage(pretty)
+  pretty = line.gsub(/!./, "")       # Remove cancelled characters.
+  clean = pretty.gsub(/<.*?>/, "<>") # Remove garbage groups.
 
-  puts "less garbage: %s" % [pretty.length - clean.length]
-  puts "score: %s" % count(1, clean)
+  puts "garbage: %s" % [pretty.length - clean.length]
+  # puts "score: %s" % count(1, clean)
+  puts "score: %s" % clean.chars.reduce(1) { |sum, c}
+    case c
+      when "{"
+        sum + 
 end
-
