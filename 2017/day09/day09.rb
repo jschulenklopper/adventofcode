@@ -16,10 +16,6 @@ while line = gets
   pretty = line.gsub(/!./, "")       # Remove cancelled characters.
   clean = pretty.gsub(/<.*?>/, "<>") # Remove garbage groups.
 
+  puts "score: %s" % count(1, clean)
   puts "garbage: %s" % [pretty.length - clean.length]
-  # puts "score: %s" % count(1, clean)
-  puts "score: %s" % clean.chars.reduce(1) { |sum, c}
-    case c
-      when "{"
-        sum + 
 end
