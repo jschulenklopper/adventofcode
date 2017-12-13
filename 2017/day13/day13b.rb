@@ -17,6 +17,9 @@ def caught?(layers, delay)
       end
     end
 
+    # No need to test the other positions.
+    break if caught
+
     time += 1
     position += 1
   end
