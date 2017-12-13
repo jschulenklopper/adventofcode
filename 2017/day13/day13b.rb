@@ -1,5 +1,6 @@
-def calc_severity(layers, delay)
-  severity = 0
+def caught?(layers, delay)
+  # TODO Find situation in which all layers are at zero at starting time + layer.
+  # Or... for a given delay, count the number of scanners at the zeroth position.
   time = delay
   position = 0
   caught = false
@@ -13,8 +14,6 @@ def calc_severity(layers, delay)
       # If scanner is at position 0...
       if scanner_position == 0
         caught = true
-        # ... add damage to severity.
-        severity += position * layers[position]
       end
     end
 
@@ -22,7 +21,7 @@ def calc_severity(layers, delay)
     position += 1
   end
 
-  return [caught, severity]
+  caught
 end
 
 # Read input.
@@ -32,14 +31,9 @@ while line = gets
   layers[depth] = range
 end
 
-# Calculate severity for range of delays.
+# Find out if we're being caught for range of delays.
 delay = 0
-while true
-  caught, severity = calc_severity(layers, delay)
-  if severity == 0 && caught == false
-    puts delay
-    exit
-  end
-
+while caught?(layers, delay)
   delay += 1
 end
+puts delay
