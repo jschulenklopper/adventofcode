@@ -1,30 +1,22 @@
-FactorA = 16807
-FactorB = 48271
+FactorA, FactorB = 16807, 48271
+ModA, ModB = 4, 8
 Div = 2147483647
 
 a = 883
 b = 879
 
-def nextA(a)
+def nextNumber(prev, factor, div, mod)
   while true
-    a = (a * FactorA) % Div 
-    break if a % 4 == 0
+    prev = (prev * factor) % div 
+    break if prev % mod == 0
   end
-  a
-end
-
-def nextB(b)
-  while true
-    b = (b * FactorB) % Div
-    break if b % 8 == 0
-  end
-  b
+  prev
 end
 
 matches = 0
 5000000.times do 
-  a = nextA(a) 
-  b = nextB(b)
+  a = nextNumber(a, FactorA, Div, ModA)
+  b = nextNumber(b, FactorB, Div, ModB)
   matches += 1 if (a % 2**16) == (b % 2**16)
 end
 
