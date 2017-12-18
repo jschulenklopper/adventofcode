@@ -50,8 +50,6 @@ class Computer
     # Load the next instruction from the PC location.
     instruction = @instructions[@pc]
 
-    # puts "-> %i: %s('%s','%s')" % [@pc, instruction.instruction, instruction.param1, instruction.param2]
-
     # This assumes that evaluating the instruction returns the PC.
     @pc = eval("%s('%s','%s')" % [instruction.instruction, instruction.param1, instruction.param2])
   end
