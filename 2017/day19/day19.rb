@@ -1,9 +1,8 @@
 require 'matrix'
 
 class Matrix
-  # Additional method to get the matrix value 'at' the position.
-  def tube?(position)
-    self[position[0], position[1]] && self[position[0], position[1]] != " "
+  def not_empty?(position)
+    self[position[0], position[1]] != " "
   end
 end
 
@@ -35,11 +34,11 @@ while true
     collected << c  # Collect character.
   elsif c == "+"  # Change direction.
     if direction == :E || direction == :W
-      south = current + Directions[:S]
-      direction = grid.tube?(south) ? :S : :N
+      continue_south = grid.not_empty?(current + Directions[:S])
+      direction = continue_south ? :S : :N
     elsif direction == :S || direction == :N
-      east = current + Directions[:E]
-      direction = grid.tube?(east) ? :E : :W
+      continue_east = grid.not_empty?(current + Directions[:E])
+      direction = continue_east ? :E : :W
     end
   end
 end
