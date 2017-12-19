@@ -1,91 +1,45 @@
-class Diagram < Hash
-  
-  attr_reader :width, :height, :start
+require 'matrix'
 
-  def initialize
-    @cells = Hash.new  # FIXME This could be self?
-    @height = 0
-    @width = 0
-    @start = nil
+class Matrix
+  # Additional method to get the matrix value 'at' the position.
+  def tube?(position)
+    self[position[0], position[1]] && self[position[0], position[1]] != " "
   end
-
-  def store(x,y,value)
-    cell_id = "%s,%s" % [x,y]
-    @height = y+1 if y > @height
-    @width = x+1 if x > @width
-    @cells[cell_id] = value
-
-    # Store start.
-    if y == 0 && value == "|"
-      @start = [x,y]
-    end
-  end
-
-  def get(x,y)
-    cell_id = "%s,%s" % [x,y]
-    @cells[cell_id]
-  end
-
 end
 
-tubes = Diagram.new
-
-# First, read all the input lines, and store the tubes.
+# First, read all the input lines and store the grid in a matrix.
 lines = readlines
-lines.each_with_index do |line, row|
-  line.chars.each_with_index do |c, col|
-    if c.match(/[|\-+A-Z]/)
-      tubes.store(col,row,c)
-    end
-  end
-end
+grid = Matrix.rows(lines.map { |line| line.chomp.chars })
 
-# Then, construct the segments (or: path) by following the tubes.
-current = tubes.start
+# Set up constants and variables.
+Directions = {:N => Vector[-1,0], :S => Vector[1,0],
+              :W => Vector[0,-1], :E => Vector[0,1] }
+direction = :S  # Vector pointing to current direction: down.
 collected = ""
-direction = [0,1] # Vector pointing to current direction: down.
 steps = 0
 
+# Find the starting position on first row.
+current = Vector[0, grid.row(0).to_a.index("|")]
+
+# Then, construct path by following the lines.
 while true
-  # Navigate to next cell
-  current[0] = current[0] + direction[0]
-  current[1] = current[1] + direction[1]  # FIXME Can this be nicer?
-
+  # Navigate to and get next cell
+  current += Directions[direction]
   steps += 1
+  c = grid[current[0],current[1]]
 
-  c = tubes.get(current[0], current[1])
-  
-  break if c == nil
+  # Apparently, we've reached the end of the path.
+  break if c == nil || c == " "
 
   if c.between?("A", "Z")
-    collected << c
-  elsif c == "+"
-    # direction needs to change.
-    # FIXME Can be shorter.
-    if direction == [0,1]
-      if tubes.get(current[0]+1, current[1])
-        direction = [1,0]
-      else
-        direction = [-1,0]
-      end
-    elsif direction == [0,-1] 
-      if tubes.get(current[0]+1, current[1])
-        direction = [1,0]
-      else
-        direction = [-1,0]
-      end
-    elsif direction == [1,0]
-      if tubes.get(current[0], current[1]+1)
-        direction = [0,1]
-      else
-        direction = [0,-1]
-      end
-    elsif direction == [-1,0] 
-      if tubes.get(current[0], current[1]+1)
-        direction = [0,1]
-      else
-        direction = [0,-1]
-      end
+    collected << c  # Collect character.
+  elsif c == "+"  # Change direction.
+    if direction == :E || direction == :W
+      south = current + Directions[:S]
+      direction = grid.tube?(south) ? :S : :N
+    elsif direction == :S || direction == :N
+      east = current + Directions[:E]
+      direction = grid.tube?(east) ? :E : :W
     end
   end
 end
