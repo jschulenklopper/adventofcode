@@ -1,6 +1,8 @@
 def caught?(layers, delay)
   # TODO Find situation in which all layers are at zero at starting time + layer.
-  # Or... for a given delay, count the number of scanners at the zeroth position.
+  # Or... for a given delay, just count the number of scanners at the zeroth position.
+  # That would save the iterations, increasing the time / position and investigating
+  # the next layer.
   time = delay
   position = 0
   caught = false
