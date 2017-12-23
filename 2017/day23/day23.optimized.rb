@@ -1,3 +1,3 @@
 require 'prime'
 
-(109900..126900).step(17).collect { |n| !n.prime? }.count(true)
+puts (109900..126900).step(17).count { |n| !n.prime? }
