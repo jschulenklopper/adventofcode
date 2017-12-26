@@ -13,7 +13,7 @@ end
 
 STEPS.times do 
   value = positions[position]
-  situation = [state, value]
+  p situation = [state, value]
 
   case situation
     when ["A", 0]
@@ -41,6 +41,7 @@ STEPS.times do
     when ["F", 1]
       state, position = step(1, position, positions, +1, "C")
   end
+  puts positions.values.reduce(:+)
 end
 
 puts positions.values.reduce(:+)
