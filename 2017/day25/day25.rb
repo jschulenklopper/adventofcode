@@ -1,47 +1,36 @@
-STEPS = 12523873
+# Just copied the spec from the input file. No difficult parsing required.
+rules = { "A,0" => [0, 1, +1, "B"],
+          "A,1" => [1, 1, -1, "E"],
+          "B,0" => [0, 1, +1, "C"],
+          "B,1" => [1, 1, +1, "F"],
+          "C,0" => [0, 1, -1, "D"],
+          "C,1" => [1, 0, +1, "B"],
+          "D,0" => [0, 1, +1, "E"],
+          "D,1" => [1, 0, -1, "C"],
+          "E,0" => [0, 1, -1, "A"],
+          "E,1" => [1, 0, +1, "D"],
+          "F,0" => [0, 1, +1, "A"],
+          "F,1" => [1, 1, +1, "C"],
+        }
 state = "A"
+STEPS = 12523873
+
 checksum = 0
 positions = Hash.new(0)
-position = 0
-
-# Return state and position after making move.
-def step(value, position, positions, position_delta, next_state)
-  positions[position] = value
-  position += position_delta
-  return [next_state, position]
-end
+pos = 0
 
 STEPS.times do 
-  value = positions[position]
-  p situation = [state, value]
+  # Make representation of current situation.
+  situation = "%s,%s" % [state, positions[pos]]
 
-  case situation
-    when ["A", 0]
-      state, position = step(1, position, positions, +1, "B")
-    when ["A", 1]
-      state, position = step(1, position, positions, -1, "E")
-    when ["B", 0]
-      state, position = step(1, position, positions, +1, "C")
-    when ["B", 1]
-      state, position = step(1, position, positions, +1, "F")
-    when ["C", 0]
-      state, position = step(1, position, positions, -1, "D")
-    when ["C", 1]
-      state, position = step(0, position, positions, +1, "B")
-    when ["D", 0]
-      state, position = step(1, position, positions, +1, "E")
-    when ["D", 1]
-      state, position = step(0, position, positions, -1, "C")
-    when ["E", 0]
-      state, position = step(1, position, positions, -1, "A")
-    when ["E", 1]
-      state, position = step(0, position, positions, +1, "D")
-    when ["F", 0]
-      state, position = step(1, position, positions, +1, "A")
-    when ["F", 1]
-      state, position = step(1, position, positions, +1, "C")
-  end
-  puts positions.values.reduce(:+)
+  # Pick matching rule.
+  rule = rules[situation]
+
+  # Apply changes according to rule.
+  positions[pos] = rule[1]
+  state = rule[3]
+  pos += rule[2]
+  checksum = checksum + (rule[1] - rule[0])
 end
 
-puts positions.values.reduce(:+)
+puts checksum
