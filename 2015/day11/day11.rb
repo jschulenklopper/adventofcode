@@ -1,5 +1,5 @@
-last = ARGV[0].strip
-ok = false
+last = gets.strip
+ok = 0
 
 def straight_ok(string)
   start = 0
@@ -24,12 +24,12 @@ def two_pairs_ok(string)
   false
 end
 
-until ok
+until ok == 2  # For part 2, make this 2.
   last = last.succ
   if straight_ok(last) &&
        letters_ok(last) &&
        two_pairs_ok(last)
-    ok = true
+    ok += 1
   end
 end
 
