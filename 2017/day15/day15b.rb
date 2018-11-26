@@ -2,8 +2,8 @@ FactorA, FactorB = 16807, 48271
 ModA, ModB = 4, 8
 Div = 2147483647
 
-a = 883
-b = 879
+a = gets.strip.split(" ").last.to_i
+b = gets.strip.split(" ").last.to_i
 
 def nextNumber(prev, factor, div, mod)
   while true

@@ -2,8 +2,8 @@ FactorA = 16807
 FactorB = 48271
 Div = 2147483647
 
-a = 883
-b = 879
+a = gets.strip.split(" ").last.to_i
+b = gets.strip.split(" ").last.to_i
 
 matches = 0
 
