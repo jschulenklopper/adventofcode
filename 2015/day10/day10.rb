@@ -14,11 +14,10 @@ def look_and_say(string)
   result
 end
 
-current = ARGV[0].strip
-number = ARGV[1].strip.to_i
+current = gets.strip
+number = 40  # For part 2, make this 50.
 
 number.times do |i|
-  puts i+1
   current = look_and_say(current)
 end
 
