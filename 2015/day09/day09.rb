@@ -35,6 +35,7 @@ end
 possible_trips = cities.permutation.to_a
 
 shortest_distance = nil
+longest_distance = nil
 possible_trips.each do |trip|
   distance = 0
   from = trip.pop
@@ -43,6 +44,8 @@ possible_trips.each do |trip|
     from = to
   end
   shortest_distance = distance if shortest_distance == nil || distance < shortest_distance
+  longest_distance = distance if longest_distance == nil || distance > longest_distance
 end
 
-puts shortest_distance
+puts "shortest distance: " + shortest_distance
+puts "longest distance: " + longest_distance
