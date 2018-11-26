@@ -1,6 +1,6 @@
 require 'digest'
 
-input = ARGV[0]
+input = gets.strip
 start = 0
 while start
   string = start.to_s
