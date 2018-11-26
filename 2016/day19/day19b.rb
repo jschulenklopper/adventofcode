@@ -33,4 +33,4 @@ while elves.length > 1
   elf = elves.next(elf)
 end
 
-p elves
+puts elves

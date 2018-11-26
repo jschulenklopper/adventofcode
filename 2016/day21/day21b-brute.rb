@@ -82,4 +82,3 @@ mutations.each do |mutation|
     exit
   end
 end
-

@@ -91,4 +91,3 @@ puts grid
 # between the goal data and the [0,0] node.
 # Then 'circle' around the empty node around the goal data, moving it one step
 # closer in five moves. Stop counting if goal data is shoved to [0,0].
-
