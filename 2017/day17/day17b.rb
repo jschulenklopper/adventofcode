@@ -1,4 +1,4 @@
-Input = 337
+Input = gets.strip.to_i
 Reps = 50000000
 
 # Start array with first value. Second value will be updated later.

@@ -1,1 +1,1 @@
-p readlines.count { |line| line.split == line.split.uniq }
+puts readlines.count { |line| line.split == line.split.uniq }

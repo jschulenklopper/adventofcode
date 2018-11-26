@@ -1,4 +1,4 @@
-Input = 337
+Input = gets.strip.to_i
 Reps = 2017
 
 numbers = [0]
@@ -17,5 +17,4 @@ Reps.times do |i|
   current = current % numbers.length
 end
   
-
 puts numbers[current+1]
