@@ -124,4 +124,3 @@ purchase_stuff(shop_inventory) do |cart|
 end
 
 puts lowest_cost
-

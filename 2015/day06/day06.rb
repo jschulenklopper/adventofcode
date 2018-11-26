@@ -42,4 +42,3 @@ while line = gets
 end
 
 puts grid.delete_if {|k, v| v == 0}.length
-

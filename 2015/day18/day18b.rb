@@ -115,4 +115,3 @@ grid.fix_corners(width, height)
 end
 
 puts grid.number_of_lights_on(width, height)
-

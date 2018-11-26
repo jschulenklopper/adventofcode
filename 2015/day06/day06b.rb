@@ -44,4 +44,3 @@ while line = gets
 end
 
 puts grid.values.inject(:+)
-

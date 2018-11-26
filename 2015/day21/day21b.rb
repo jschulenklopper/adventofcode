@@ -115,4 +115,3 @@ purchase_stuff(shop_inventory) do |cart|
 end
 
 puts highest_cost
-

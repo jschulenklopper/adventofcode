@@ -97,4 +97,3 @@ while true
 end
 
 puts computer.registers["b"]
-
