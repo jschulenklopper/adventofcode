@@ -15,4 +15,4 @@ while line = gets
   total_ribbon += bow + ribbon
 end
 
-puts total_paper
+puts total_ribbon
