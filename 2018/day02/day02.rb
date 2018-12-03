@@ -2,8 +2,8 @@ exactly_two, exactly_three = 0,0
 
 # Process all lines.
 while line = gets
-    memo = Hash.new(0)
     # Build a frequency map for all characters in line.
+    memo = Hash.new(0)
     line.strip.chars.each { |char|
         memo[char] += 1
     }
