@@ -2,11 +2,7 @@ fabric = Hash.new(0)
 
 while line = gets do
     # Parse a line and get values from it.
-    id, x, y, w, h = line.strip.match(/^#(\d+) @ (\d+),(\d+): (\d+)x(\d+)$/).captures
-    x = x.to_i
-    y= y.to_i
-    w = w.to_i
-    h = h.to_i
+    id, x, y, w, h = line.strip.match(/^#(\d+) @ (\d+),(\d+): (\d+)x(\d+)$/).captures.map(&:to_i)
 
     # Update fabric by increasing counter for area of this piece.
     w.times do |i|
