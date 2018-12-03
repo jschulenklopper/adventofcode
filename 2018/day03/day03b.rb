@@ -8,19 +8,19 @@ while line = gets do
     # Add id to list of all ids.
     all_ids << id
 
-    # Enter claim on fabric.
     w.times do |i|
         h.times do |j|
+            # Enter claim on fabric; add id to list.
             fabric[[x+i,y+j]] += [id]
+
+            # If there's more than one claim on the spot,
+            # remove id and other ids on that spot from all_ids.
+            if fabric[[x+i,y+j]].length > 1 
+               all_ids.delete(id)
+               fabric[[x+i,y+j]].each { |id| all_ids.delete(id) }
+            end
         end
     end
 end
-
-# Remove ids from all_ids if they end up in overlapping piece.
-fabric.values.each { |ids|
-    if ids.length > 1
-        ids.each { |id| all_ids.delete(id) }
-    end
-}
 
 puts all_ids.join(", ")
