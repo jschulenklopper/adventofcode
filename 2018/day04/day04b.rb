@@ -1,49 +1,28 @@
-re_time = /^\[(\d+)-(\d+)-(\d+) (\d+):(\d+)\]/
-re_wakes = /wakes up/
-re_sleeps = /falls asleep/
-re_shift = /Guard #(\d+) begins shift/
+# Input lines are being sorted (conveniently by date/time, at the start).
+lines = gets(nil).split("\n").sort
 
-actions = []
-
-while line = gets do
-    # Capturing year, month, day, hour, minute to action array.
-    action = line.match(re_time).captures.map(&:to_i)
-    
-    # Add verb, or add guard id to action.
-    if line.match(re_wakes)
-        action << :wakes
-    elsif line.match(re_sleeps)
-        action << :sleeps
-    elsif guard = line.match(re_shift).captures.map(&:to_i).first
-        action << guard
-    end
-
-    actions << action
-end
-
-# Sort actions (on date and time, which are the first entries in the arrays).
-actions.sort!
-
+# Maintain a list of guards, and keep track of the current one.
 guards = Hash.new()
 current_guard = 0
 
-actions.each do |action|
+lines.each do |line|
+    # Capturing year, month, day, hour, minute to action array.
+    action = line.match(/^\[(\d+)-(\d+)-(\d+) (\d+):(\d+)\]/).captures.map(&:to_i)
     # Make the start happen on the first minute of midnight.
     start = (action[3] != 0) ? 0 : action[4]
-
-    if action[5].class == Integer
-        # New guard begins shift.
-        current_guard = action[5]
-        # Create a new punch card for the new guard, fill it with zeros.
-        guards[current_guard] = Array.new(60,0) unless guards[current_guard]
-    elsif action[5] == :sleeps
-        # Mark punch card as being sleep from start to end.
-        (start..59).each { |m| guards[current_guard][m] += 1 }
-    elsif action[5] == :wakes
+    
+    if line.match(/wakes up/)
         # Mark punch card as awake, decreasing sleep count from start to end.
         (start..59).each { |m| guards[current_guard][m] += -1 }
+    elsif line.match(/falls asleep/)
+        # Mark punch card as being sleep from start to end.
+        (start..59).each { |m| guards[current_guard][m] += 1 }
+    elsif guard = line.match(/Guard #(\d+) begins shift/).captures.map(&:to_i).first
+        # New guard begins shift.
+        current_guard = guard
+        # Create a new punch card for the new guard, fill it with zeros.
+        guards[current_guard] = Array.new(60,0) unless guards[current_guard]
     end
-
 end
 
 # Find the guard that is asleep the most minutes.
