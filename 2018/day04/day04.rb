@@ -46,18 +46,15 @@ actions.each do |action|
 
 end
 
-guard_most_asleep = 0
-max_sleep = 0
+# Find the guard that is asleep the most minutes.
+guard_most_asleep = guards.max_by do |g|
+    # Compute amount of sleep of this guard.
+    # This value will be used to find the sleepiest guard.
+    # NB: guard's id is first in g.
+    guards[g.first].reduce(&:+)
+end.first
 
-guards.keys.map do |id|
-    sleeps = guards[id].reduce(&:+)
-
-    if sleeps > max_sleep
-        max_sleep = sleeps
-        guard_most_asleep = id
-    end
-end
-
+# Find the most slept minute for the guard that is most sleepy.
 sleepiest_minute = guards[guard_most_asleep].find_index(guards[guard_most_asleep].max)
 
 puts guard_most_asleep * sleepiest_minute
