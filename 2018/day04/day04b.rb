@@ -48,10 +48,10 @@ end
 
 # Find the guard that is asleep the most minutes.
 guard_most_asleep = guards.max_by do |g|
-    # Compute amount of sleep of this guard.
+    # Compute minute most slept on.
     # This value will be used to find the sleepiest guard.
     # NB: guard's id is first in g.
-    guards[g.first].sum
+    guards[g.first].max
 end.first
 
 # Find the most slept minute for the guard that is most sleepy.
