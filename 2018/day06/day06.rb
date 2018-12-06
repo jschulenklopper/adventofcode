@@ -1,18 +1,11 @@
-re_line = /^(\d+), (\d+)$/  # Expression to capture X and Y coordinates.
-
 # Create hash for all locations.
 locations = Hash.new
 
 id = "A"  # Just give first location an id.
 while line = gets
     # TODO Keeping/using the id isn't really necessary; remove that.
-    locations[id] = line.strip.match(re_line).captures.map(&:to_i)
+    locations[id] = line.match(/^(\d+), (\d+)$/).captures.map(&:to_i)
     id.next!  # Advance id to next character ("B" will be second).
-end
-
-# Compute Manhattan distance between two positions.
-def distance(a, b)
-    (a[0] - b[0]).abs + (a[1] - b[1]).abs
 end
 
 # Find locations most to the left, top, right and bottom.
@@ -31,8 +24,9 @@ areas = Hash.new { |hash, key| hash[key] = [] }  # Assign a default value.
         # Compute all the distances between position and all locations.
         distances = Hash.new
         locations.each do |id, pos|
+            # Compute Manhattan distance between two positions.
             # TODO Instead of id, pos could also work as id.
-            distances[id] = distance(pos, [x,y])
+            distances[id] = (pos[0] - x).abs + (pos[1] - y).abs
         end
 
         # Find the closest location.
@@ -43,7 +37,7 @@ areas = Hash.new { |hash, key| hash[key] = [] }  # Assign a default value.
         number_closest = distances.count { |id, dis| dis == closest[1] }
         # If there's only one, add position to correct location area list.
         if number_closest == 1
-            # TODO Instead of closest[1], use pos.
+            # TODO Instead of closest[0], use pos.
             areas[closest[0]] << [x,y]
         end
     end
