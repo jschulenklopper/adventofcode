@@ -30,16 +30,17 @@ end
 # Compute value of a node
 def value(node)
     if node == nil
-        value = 0
+        0
     elsif node[:children].empty?
-        value = node[:metadata].sum
+        node[:metadata].sum
     else
+        # TODO This should be doable with reduce.
         value = 0
         node[:metadata].each do |index|
             value += value(node[:children][index-1]) if index > 0
         end
+        value
     end
-    value
 end
 
 # Read root node.
