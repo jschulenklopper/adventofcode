@@ -1,9 +1,7 @@
 grid_size = 300
 grid = Hash.new 
-powers = Hash.new
 
 serial = gets.strip.to_i
-# serial = 18  # Sample input.
 
 def power(x, y, serial)
     rack_id = x + 10
@@ -15,45 +13,37 @@ def power(x, y, serial)
 end
 
 # Fill grid.
+# TODO This can be made nicer, for example by map() and iterating over the grid cells.
 (1..grid_size).each do |x|
   (1..grid_size).each do |y|
     power = power(x, y, serial)
     grid[ [x,y] ] = power
-    powers[ [x,y] ] = [power,1]  # powers[[x,y]] = [power, square_size]
   end
 end
 
-# Print grid.
-(1..grid_size).each do |y|
-  string = ""
-  (1..grid_size).each do |x|
-    string += "%3i" % grid[ [x,y] ]
-  end
-  # puts string
-end
-
-max = 0
-max_square = 20
-maxes = Array.new
+max_square = 15
+maxes = Array.new(4, 0)
 
 # Compute powers for all squares sized s starting at x,y.
-(2 .. max_square).each do |s|
-  puts "square_size: %i" % s
-  (1 .. grid_size-s).each do |y|
-    (1 .. grid_size-s).each do |x|
+(2 .. max_square).each do |square_size|
+  (1 .. grid_size-square_size).each do |y|
+    (1 .. grid_size-square_size).each do |x|
 
-      new_x = s-1 + x
-      new_y = s-1 + y
+      new_x = square_size-1 + x
+      new_y = square_size-1 + y
 
+      # TODO This line is getting expensive to compute for larger squares,
+      # because of many grid values to sum.
+      # There should be a smarter solution, re-using previously computed values.
+      # Something like (x,y,n) = (x,y+n-1,1) + (x+n-1,y,1) + (x,y,n-1) + (x+1,y+1,n-1) - (x+1,y+1,n-2)
       cell = (x .. new_x).map { |nx| (y .. new_y).map { |ny| grid[ [nx,ny] ] } }.flatten.sum
 
-      if cell > max
-        max = cell
-        maxes = [x,y,s,max]
+      if cell > maxes[3]
+        maxes = [x,y,square_size,cell]
       end
 
     end
   end
 end
 
-p maxes
+puts maxes[0,3].join(",")
