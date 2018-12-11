@@ -2,7 +2,7 @@ grid_size = 300
 grid = Hash.new 
 square_size = 3
 
-p serial = gets.strip.to_i
+serial = gets.strip.to_i
 
 (1..grid_size).each do |x|
   (1..grid_size).each do |y|
