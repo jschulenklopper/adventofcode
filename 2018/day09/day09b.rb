@@ -80,8 +80,7 @@ def high_score(nr_players, last_marble)
     scores.max
 end
 
-while line = gets
-    next if line[0] == "#"
-    nr_players, last_marble = line.match(/^(\d+) players.*worth (\d+) points$/).captures.map(&:to_i)
-    puts high_score(nr_players, last_marble)
-end
+line = gets
+nr_players, last_marble = line.match(/^(\d+) players.*worth (\d+) points$/).captures.map(&:to_i)
+last_marble *= 100
+puts high_score(nr_players, last_marble)
