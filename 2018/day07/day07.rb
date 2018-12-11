@@ -26,35 +26,21 @@ end
 queue = links.no_prev_steps
 visited = []
 
-puts "queue: %s" % queue.to_s
-puts "visited: %s" % visited.to_s
-
 while step = queue.shift
-    puts "---"
-    puts "processing step: %s" % step.to_s
-
     # Add step to list of visited steps.
     visited << step
 
     next_steps = links.next_steps(step)
-    puts "list of potential next steps: %s" % next_steps.to_s
 
     next_steps.reject! { |step|
         visited.include?(step) ||
         queue.include?(step) ||
-        # als niet alle prevs van step in visited zitten
         (links.prev_steps(step) & visited).length != links.prev_steps(step).length
     }
-
-    puts "list of next steps: %s" % next_steps.to_s
 
     # Add all steps to queue, and sort queue.
     next_steps.each { |step| queue << step }
     queue.sort!
-
-    puts "queue: %s" % queue.to_s
-    puts "visited: %s" % visited.to_s
 end
 
-puts "visited: %s" % visited.to_s
 puts visited.join
