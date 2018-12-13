@@ -101,9 +101,8 @@ def move(carts, tracks)
     # If there's a collision, remove the carts at car.position.
     crash_site = cart.position
     if carts.select { |c| c.position == crash_site }.length > 1
-      puts crash_site.to_s
+      puts crash_site.join(",")
       exit
-      carts.delete_if { |c| c.position == crash_site }
     end
   end
 
@@ -111,22 +110,9 @@ def move(carts, tracks)
   carts
 end
 
-# puts "tracks: " + tracks.to_s
-puts "carts: " + carts.to_s
-
-print(tracks, carts)
-
 tick = 0
 while true
-  puts tick
-
   carts = move(carts, tracks)
-
-  puts "carts: " + carts.length.to_s
-
-  if carts.length == 1
-    puts carts.first.position
-  end
 
   tick += 1
 end
