@@ -9,7 +9,6 @@ INTERSECTION_CHARS = %w( + )
 TRACK_CHARS = BEND_CHARS + STRAIGHT_CHARS + INTERSECTION_CHARS
 CART_CHARS = %w( > < ^ v )
 DIRECTIONS = { "v" => [0,1], "^" => [0,-1], ">" => [1,0], "<" => [-1,0] } 
-# DIRECTIONS_TOO = { :down => [0,1], :up => [0,-1], :right => [1,0], :left => [-1,0] } 
 NEXT_DIRECTION = { ["/",[0,1]] => [-1,0],  # TODO Can this be done nicer?
                    ["/",[0,-1]] => [1,0],
                    ["/",[1,0]] => [0,-1],
@@ -28,13 +27,13 @@ TURNS = { :left => Matrix[ [0, -1], [1, 0] ],
 TURN_ORDER = [:left, :straight, :right]
 
 tracks = Hash.new  # [x,y] => track ( /, |, \, -, or + )
-carts = Array.new  # of Cart structs
+carts = Array.new  # Array of Cart structs
 
 lines = gets(nil).split("\n")
 lines.each.with_index { |line, y|
   line.chars.each.with_index { |c, x|
     tracks[ [x,y] ] = c if TRACK_CHARS.include?(c)
-    carts << Cart.new(carts.length, [x,y], DIRECTIONS[c], 0, false) if CART_CHARS.include?(c)  # id, position, direction, nr_of_turns
+    carts << Cart.new(carts.length, [x,y], DIRECTIONS[c], 0, false) if CART_CHARS.include?(c)  # id, position, direction, nr_of_turns, crashed
     # Add missing track if it is covered with cart.
     case c
       when ">" then tracks[ [x,y] ] = "-"
@@ -112,7 +111,6 @@ def move(carts, tracks)
   carts
 end
 
-tick = 0
 while true
   carts = move(carts, tracks)
 
@@ -120,6 +118,4 @@ while true
     puts carts.first.position.join(",")
     exit
   end
-
-  tick += 1
 end
