@@ -1,100 +1,9 @@
 START_AP = 3
 START_HP = 200
 
-Unit = Struct.new(:type, :square, :ap, :hp, :alive)
-Square = Struct.new(:x, :y)
-
-class Unit
-  def to_s
-    t = (type == :elf) ? "E" : "G"
-    "%s: %s (%i)" % [t, square.to_s, hp]
-  end
-
-  def char
-    (type == :elf) ? "E" : "G"
-  end
-
-  def distance(unit)
-    square.distance(unit.square)
-  end
-
-  def <=>(other)
-    square <=> other.square
-  end
-end
-
-class Square
-  def to_s
-    "[%i,%i]" % [x, y]
-  end
-
-  def char
-    "."
-  end
-
-  def distance(square)
-    (x - square.x).abs + (y - square.y).abs
-  end
-
-  def <=>(other)
-    comp = (y <=> other.y)
-    (!comp.zero?) ? comp : x <=> other.x
-  end
-end
-
-class Maze < Array  # A maze is just a list of (open) squares.
-  attr_accessor :squares, :units
-
-  def initialize
-    @squares = Array.new
-    @units = Array.new
-  end
-
-  def units_on_square(square)
-    units.select { |u| u.square == square }
-  end
-
-  def units_alive
-    @units.select { |u| u.alive }.sort 
-  end
-
-  def opponents_alive(unit)
-    @units.select { |o| o.alive && o.type != unit.type }.sort
-  end
-
-  def opponents_in_range(unit)
-    opponents_alive(unit).select { |o| o.distance(unit) == 1}
-  end
-
-  def squares_in_range(opponents)
-    squares.select { |s|
-      square_free = units_on_square(s).length == 0
-      units_close = opponents.select { |o| s.distance(o.square) == 1 }.length > 0
-
-      square_free && units_close
-    }.sort
-  end
-
-  def to_s
-    min_x, max_x = [self.squares.map {|s| s.x}.min, self.squares.map {|s| s.x}.max]
-    min_y, max_y = [self.squares.map {|s| s.y}.min, self.squares.map {|s| s.y}.max]
-
-    lines = ""
-    (min_y-1 .. max_y+1).each do |y|
-      (min_x-1 .. max_x+1).each do |x|
-        if unit = units.find { |u| u.square.x == x && u.square.y == y }
-          lines += unit.char
-        elsif squares.select { |s| s.x == x && s.y == y }.length > 0
-          lines += "."
-        else
-          lines += "#"
-        end
-      end #
-      lines += "\n"
-    end
-    lines
-  end
-end
+require './unit.rb'
+require './square.rb'
+require './maze.rb'
 
 maze = Maze.new
 
@@ -162,6 +71,7 @@ while true
     #    1. There might not be open squares or opponents in range:
     #       end this turn.
     if opponents_in_range.empty? && squares_in_range.empty?
+      puts "for this unit, nothing to do"
       next
     end
 
