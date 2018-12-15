@@ -31,7 +31,6 @@ from_index = 0
 
 # Temp store unique positions for elf 0 and 1.
 positions = [ [], [] ]
-# found = false
 
 # Loop; generate recipes until target is found.
 while true
