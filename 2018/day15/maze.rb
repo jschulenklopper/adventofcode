@@ -1,9 +1,34 @@
 class Maze < Array  # A maze is just a list of (open) squares.
   attr_accessor :squares, :units
 
-  def initialize
+  def initialize(input)
     @squares = Array.new
     @units = Array.new
+
+    # Parse input and build map and armies.
+    y = 0
+    input.split("\n").each do |line|
+      break if line.strip.empty?
+
+      x = 0
+      line.strip.chars.each do |c|
+        case c
+        when " "
+          break   # Break parsing line after space.
+        when "#"  # For now, don't store walls.
+        when "G"
+          @squares << square = Square.new(x,y)
+          @units << Unit.new(:goblin, square, 3, 200, true)
+        when "E"
+          @squares << square = Square.new(x,y)
+          @units << Unit.new(:elf, square, 3, 200, true)
+        when "."
+          @squares << Square.new(x,y)
+        end
+        x += 1
+      end
+      y += 1
+    end
   end
 
   def units_on_square(square)

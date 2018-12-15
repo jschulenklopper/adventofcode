@@ -5,7 +5,8 @@ require './unit.rb'
 require './square.rb'
 require './maze.rb'
 
-maze = Maze.new
+input = gets(nil)
+maze = Maze.new(input)
 
 # Parse input and build map and armies.
 y = 0
