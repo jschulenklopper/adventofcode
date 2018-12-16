@@ -18,8 +18,6 @@ end
 # Start reading the program here.
 # TODO
 
-p samples.length
-
 operations = Hash.new # { :name, :lambda }
 
 # addr (add register) stores into register C the result of adding register A and register B.
@@ -61,37 +59,21 @@ operations[:eqri] = lambda { |registers, a, b, c| registers[c] = (registers[a] =
 # eqrr (equal register/register) sets register C to 1 if register A is equal to register B. Otherwise, register C is set to 0.
 operations[:eqrr] = lambda { |registers, a, b, c| registers[c] = (registers[a] == registers[b]) ? 1 : 0 }
 
-# Example of showing registers, applying operation, showing registers again.
-# p registers
-# operations[:seti].(1,2,3)
-# p registers
-
 count = 0
 samples.each do |s|
-  puts "\nsample: " + s.to_s
   # Maintain list of possible opcodes.
   possible = []
 
   # Apply all operations.
   operations.each do |opcode, lambda|
-    puts "\ntesting opcode %s for instruction %i" % [opcode.inspect, s.instruction[0]]
-
-    puts "sample: "
-    p s
-
     # Set registers as defined as :before in sample.
     registers = s.before.dup
-    puts "PRE  registers: " + registers.to_s
 
     # Apply one operation, passing arguments 1, 2 and 3.
-    p s.instruction
     lambda.(registers, s.instruction[1], s.instruction[2], s.instruction[3])
 
     # Check if registers match :after in sample.
-    puts "POST registers: " + registers.to_s
-
     if registers == s.after
-      puts "registers match expectation"
       possible << opcode
     end
   end
