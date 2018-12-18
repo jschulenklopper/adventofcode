@@ -1,3 +1,4 @@
 *.swp
 *.swo
 launch.json
+.vscode/settings.json
