@@ -126,5 +126,8 @@ end
 # TODO Code pattern-finding in, instead of eyeballing it.
 
 # With my input, pattern of length 28 establishes after est. 500.
-# (1000 000 000-500) % 28 = 20 (or -4)
-# So, the value will be at the 500-4 or 524 mark: 233058
+# 528 has the same value.
+# The position in the pattern for the requirement is
+#   (1000000000 - 500) % 28 = 20 (or -4)
+# So, the requested value will be at the 500-4 or 500+24 mark
+#   233058
