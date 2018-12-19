@@ -64,27 +64,14 @@ while true
   instruction = program[ip]
   opcode, a, b, c = instruction
 
-  # When the instruction pointer is bound to a register,
-  # its value is written to that register just before each
-  # instruction is executed, and the value of that register
-  # is written back to the instruction pointer immediately
-  # after each instruction finishes execution. Afterward,
-  # move to the next instruction by adding one to the
-  # instruction pointer, even if the value in the instruction
-  # pointer was just updated by an instruction.
-
   # Write value of ip to register.
   registers[ip_register] = ip
-
-  # puts "ip=%i %s %s %s" % [ip, registers.to_s, opcode.to_s, [a,b,c].to_s]
 
   # Apply operation, passing arguments a, b, c
   operations[opcode].(registers, a, b, c)
 
   # Write value of register back to ip.
   ip = registers[ip_register]
-
-  # puts "->\t\t\t\t\t%s" % [registers.to_s]
 
   # Update ip
   ip += 1
