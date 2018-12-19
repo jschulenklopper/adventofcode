@@ -58,16 +58,16 @@ operations = {
 registers = [1, 0, 0, 0, 0, 0]
 
 ip = 0
+CAP = 100 # Stop after 100 iterations.
+count = 0
 
-while true
+while (count = count += 1) < CAP
   # Get instruction.
   instruction = program[ip]
   opcode, a, b, c = instruction
 
   # Write value of ip to register.
   registers[ip_register] = ip
-
-  puts "ip=%i %s %s %s" % [ip, opcode.to_s, [a,b,c].to_s, registers.to_s]
 
   # Apply operation, passing arguments a, b, c
   operations[opcode].(registers, a, b, c)
@@ -81,5 +81,8 @@ while true
   break if ip < 0 || ip >= program.length
 end
 
-# Print value of register 0.
-puts registers[0]
+# Program, after 'human transpilation' turns out to
+# sum all factors of value in register[4].
+target = registers[4]
+factors = (1 .. target).select { |n| target % n == 0}
+puts factors.sum
