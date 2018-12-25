@@ -1,6 +1,6 @@
 constellations = Hash.new { |hash, key| hash[key] = Array.new }
 stars = Array.new
-id = "a"  # First id for constellation, just for fun.
+id = "a"  # First id for constellation; use `#next` for `b` and so on.
 
 Star = Struct.new(:x, :y, :z, :t)
 
@@ -11,8 +11,6 @@ end
 
 # Read input.
 while line = gets
-  break if line.strip.empty?
-
   x, y, z, t = line.split(",").map(&:to_i)
   stars << Star.new(x, y, z, t)
 end
@@ -22,8 +20,9 @@ stars.each do |star|
   in_constellations = []
 
   constellations.each do |id, stars_in_constellation|
-    stars_in_constellation.dup.each do |s|  # NB The `#dup` here, to prevent looping over growing collection.
-      # Test if star is in same constellation, and not added before. # TODO Fix that ugly second condition.
+    stars_in_constellation.each do |s|
+      # Test if star is in same constellation, and not added before.
+      # TODO Fix that ugly second condition.
       if in_same_constellation?(star, s) && !constellations[id].include?(star)
         # Add star to existing constellation.
         constellations[id] << star
@@ -38,13 +37,15 @@ stars.each do |star|
     id = id.next
   end
 
-  # Merge constellations if star is also in other one.
-  main_constellation = in_constellations.shift  # Take first constellation as main.
-  in_constellations.dup.each do |id|            # Process remaining ones.
+  # Merge constellations if star is in more than one.
+  main_constellation = in_constellations.shift  # Take one as main.
+  in_constellations.each do |id|                # Process remaining ones.
+    # Add stars to main constellation.
     constellations[id].each do |star|
-      constellations[main_constellation] << star  # Ad star to main constellation.
+      constellations[main_constellation] << star
     end
-    constellations.delete(id)  # Delete merged constellation.
+    # Delete merged constellation.
+    constellations.delete(id)                    
   end
 end
 
