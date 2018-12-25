@@ -12,8 +12,6 @@ while line = gets
   notes << [from, to]
 end
 
-# ---------------------
-
 # Applies all notes on current state returning new state.
 def apply_notes(notes, state)
   new_state = []

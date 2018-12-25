@@ -25,7 +25,6 @@ def string(facility)
         then line += "X"
       elsif facility[ [x,y] ]
         then line += "."
-        # then line += facility[ [x,y] ].d.to_s[-1] 
       end
     end
     line += "#\n"
@@ -36,7 +35,6 @@ end
 
 # Read route from position, recursively. Return updated graph.
 def read_route(route, start, facility, level)
-  # puts "%sread_route(%s, %s, facility)" % ["  " * level, route.join, start.to_s]
   current = start.dup
 
   # Create facility from this part of the route.
@@ -71,7 +69,6 @@ def read_route(route, start, facility, level)
     elsif direction == ")"
       # Return this part of sub to recursive call.
       return facility
-      # FIXME I think the bug is here.
     end
   end
   facility

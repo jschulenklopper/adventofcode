@@ -89,13 +89,8 @@ samples.each do |s|
   end
 end
 
-# puts "\noperations matches on opnumber:"
-# opnumber_matches.each { |o, list| puts o.to_s + ": " + list.uniq.to_s } 
-
-# puts "\noperations matches on opcode:"
-# opcode_matches.each { |o, list| puts o.to_s + ": " + list.uniq.to_s } 
-
-# Manual work: figure out mapping between opcodes and opnumbers.
+# Here be manual work: figure out mapping between opcodes and opnumbers.
+# TODO Implement automatic discovery of opcodes per opnumber, instead of manually.
 mapping = { addi: 4,
             seti: 1,
             gtri: 7,
