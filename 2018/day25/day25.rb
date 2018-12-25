@@ -31,20 +31,20 @@ stars.each do |star|
     end
   end
 
-  unless in_constellations.length > 0
+  if in_constellations.empty?
     # Create new constellation.
     constellations[id] = [star]
     id = id.next
   end
 
   # Merge constellations if star is in more than one.
-  main_constellation = in_constellations.shift  # Take one as main.
-  in_constellations.each do |id|                # Process remaining ones.
-    # Add stars to main constellation.
+  main = in_constellations.shift  # Take first as main.
+  in_constellations.each do |id|  # Process remaining ones.
+    # Add its stars to main constellation...
     constellations[id].each do |star|
-      constellations[main_constellation] << star
+      constellations[main] << star
     end
-    # Delete merged constellation.
+    # ... and delete the merged-from constellation.
     constellations.delete(id)                    
   end
 end
