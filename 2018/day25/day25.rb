@@ -21,30 +21,26 @@ stars.each do |star|
 
   constellations.each do |id, stars_in_constellation|
     stars_in_constellation.each do |s|
-      # Test if star is in same constellation, and not added before.
-      # TODO Fix that ugly second condition.
-      if in_same_constellation?(star, s) && !constellations[id].include?(star)
-        # Add star to existing constellation.
-        constellations[id] << star
+      # Test if star is in same constellation
+      if in_same_constellation?(star, s)
         in_constellations << id
+        break
       end
     end
   end
 
   if in_constellations.empty?
     # Create new constellation.
-    constellations[id] = [star]
+    in_constellations << id
     id = id.next
   end
 
   # Merge constellations if star is in more than one.
   main = in_constellations.shift  # Take first as main.
+  constellations[main] << star
   in_constellations.each do |id|  # Process remaining ones.
     # Add its stars to main constellation...
-    constellations[id].each do |star|
-      constellations[main] << star
-    end
-    # ... and delete the merged-from constellation.
+    constellations[main] += constellations[id]
     constellations.delete(id)                    
   end
 end
