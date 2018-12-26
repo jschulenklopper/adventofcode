@@ -41,6 +41,7 @@ stars.each do |star|
   in_constellations.each do |id|  # Process remaining ones.
     # Add its stars to main constellation...
     constellations[main] += constellations[id]
+    # ... and delete merged-from constellation.
     constellations.delete(id)                    
   end
 end
