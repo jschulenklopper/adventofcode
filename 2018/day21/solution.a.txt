@@ -1,0 +1,8 @@
+Observation: program exits after test at instruction 28,
+  eqrr(3, 0, 1)
+if register 3 == register 0. At first occasion that 
+instruction 28 is executed, registers are
+  [1000, 0, 28, 11474091, 1, 1]
+
+  So, register[0] needs to be 11474091 to make the
+  program exit.
