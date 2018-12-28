@@ -117,7 +117,6 @@ def find_fastest_path(cave, from, target, tool)
     current_position, current_tool, duration = queue.shift
 
     # Register current position as visited with duration.
-    cave[ current_position ].duration = duration # if duration < cave[ current_position ].duration
     visited[ [current_position, current_tool] ] = duration
 
     # If target reached, return position, tool and duration.
@@ -125,21 +124,20 @@ def find_fastest_path(cave, from, target, tool)
 
     # Find possible positions from here.
     possible_positions = new_positions(current_position)
-    # Reject positions not allowed with current tool.
-    possible_positions.reject! { |p| ! is_allowed?(current_tool, cave[ p ]) }
-    # Reject positions+tools that are already on the queue.
-    possible_positions.reject! { |p| queue.select { |q| q[0] == p && q[1] == current_tool && (q[2] <= duration + 1) }.length > 0 }
-    # Reject positions that are already visited before.
-    possible_positions.reject! { |p| visited[ [p, current_tool] ] && (visited[ [p, current_tool] ] < duration + 1) }
+    # Reject positions not allowed with current tool, already on queue, or visited before.
+    possible_positions.reject! { |p| ! is_allowed?(current_tool, cave[ p ]) || 
+                                     queue.select { |q| q[0] == p && q[1] == current_tool && (q[2] <= duration + 1) }.length > 0 ||
+                                     visited[ [p, current_tool] ] && (visited[ [p, current_tool] ] < duration + 1) }
+                                     visited[ [p, current_tool] ] }
     # Add possible positions to queue.
     possible_positions.each { |p| queue << [p, current_tool, duration + 1] }
 
     # Find allowed tools here minus the current one.
     allowed_tools = allowed_tools(cave[ current_position ]) - [current_tool]
-    # Reject positions+tools that are already on the queue.
-    allowed_tools.reject! { |t| queue.select { |q| q[0] == current_position && q[1] == t && (q[2] <= duration + 7) }.length > 0 }
-    # Reject positions that are already visited before.
-    allowed_tools.reject! { |t| visited[ [current_position, t] ] && (visited[ [current_position, t] ] < duration + 7) }
+    # Reject positions+tools that are already on the queue or visited before.
+    allowed_tools.reject! { |t| queue.select { |q| q[0] == current_position && q[1] == t && (q[2] <= duration + 7) }.length > 0 ||
+                                visited[ [current_position, t] ] && (visited[ [current_position, t] ] < duration + 7) }
+                                visited[ [current_position, t] ] }
     # Add allowed tools for current position to queue.
     allowed_tools.each { |t| queue << [current_position, t, duration + 7] }
   end
