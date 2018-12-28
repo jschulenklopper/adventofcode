@@ -19,7 +19,6 @@ def type_for_level(level)
 end
 
 def compute_type(cave, location, target, depth)
-  # puts "compute_type(cave, %s, %s, %i)" % [location.to_s, target.to_s, depth]
   level = compute_level(cave, location, target, depth) % 3
   type = type_for_level(level)
 
@@ -27,7 +26,6 @@ def compute_type(cave, location, target, depth)
 end
 
 def compute_level(cave, location, target, depth)
-  # puts "  compute_level(cave, %s, %s, %i)" % [location.to_s, target.to_s, depth]
   # A region's erosion level is its geologic index plus the cave
   # system's depth, all modulo 20183.
   level = (compute_index(cave, location, target, depth) + depth) % 20183
@@ -36,7 +34,6 @@ def compute_level(cave, location, target, depth)
 end
 
 def compute_index(cave, location, target, depth)
-  # puts "\n    compute_index(cave, %s, %s, %i)" % [location.to_s, target.to_s, depth]
   return 0 if location[0] < 0 || location[1] < 0
 
   # Compute or retrieve levels of location left and above current location.
@@ -56,10 +53,10 @@ def compute_index(cave, location, target, depth)
     # The region at 0,0 (the mouth of the cave) has a geologic index of 0.
     index = 0
   elsif location == target
-  # The region at the coordinates of the target has a geologic index of 0.
+    # The region at the coordinates of the target has a geologic index of 0.
     index = 0
   elsif location[1] == 0
-  # If the region's Y coordinate is 0, the geologic index is its X coordinate times 16807.
+    # If the region's Y coordinate is 0, the geologic index is its X coordinate times 16807.
     index = location[0] * 16807
   elsif location[0] == 0
     # If the region's X coordinate is 0, the geologic index is its Y coordinate times 48271.
@@ -71,29 +68,6 @@ def compute_index(cave, location, target, depth)
   end
 
   cave[ location ].index = index
-end
-
-def print(cave, mouth, target, area)
-  start_x, start_y = mouth
-  area_x, area_y = area
-
-  line = ""
-  (start_y .. area_y).each do |y|
-    (start_x .. area_x).each do |x|
-      region = cave[ [x,y] ]
-      char = ""
-      if [x,y] == mouth then char = "M"
-      elsif [x,y] == target then char = "T"
-      elsif region.type == :rocky then char = "."
-      elsif region.type == :wet then char = "="
-      elsif region.type == :narrow then char = "|"
-      else char = " "
-      end
-      line += char
-    end
-    line += "\n"
-  end
-  line
 end
 
 def compute_risk(cave, from, to)

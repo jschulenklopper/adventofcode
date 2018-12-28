@@ -53,10 +53,10 @@ def compute_index(cave, location, target, depth)
     # The region at 0,0 (the mouth of the cave) has a geologic index of 0.
     index = 0
   elsif location == target
-  # The region at the coordinates of the target has a geologic index of 0.
+    # The region at the coordinates of the target has a geologic index of 0.
     index = 0
   elsif location[1] == 0
-  # If the region's Y coordinate is 0, the geologic index is its X coordinate times 16807.
+    # If the region's Y coordinate is 0, the geologic index is its X coordinate times 16807.
     index = location[0] * 16807
   elsif location[0] == 0
     # If the region's X coordinate is 0, the geologic index is its Y coordinate times 48271.
@@ -68,29 +68,6 @@ def compute_index(cave, location, target, depth)
   end
 
   cave[ location ].index = index
-end
-
-def print(cave, mouth, target, area)
-  start_x, start_y = mouth
-  area_x, area_y = area
-
-  line = ""
-  (start_y .. area_y).each do |y|
-    (start_x .. area_x).each do |x|
-      region = cave[ [x,y] ]
-      char = ""
-      if [x,y] == mouth then char = "M"
-      elsif [x,y] == target then char = "T"
-      elsif region.type == :rocky then char = "."
-      elsif region.type == :wet then char = "="
-      elsif region.type == :narrow then char = "|"
-      else char = " "
-      end
-      line += char
-    end
-    line += "\n"
-  end
-  line
 end
 
 def allowed_tools(region)
@@ -133,14 +110,11 @@ def find_fastest_path(cave, from, target, tool)
   visited = Hash.new 
 
   until queue.empty?
-    puts "\nqueue.length: %i" % queue.length
-    puts "visited.length: %i" % visited.keys.length
     # Get first from duration-sorted queue.
-    queue.sort! { |a,b| a[2] <=> b[2] }.uniq!  # DEBUG Added `uniq!` instead of checking during adding items.
+    queue.sort! { |a,b| a[2] <=> b[2] }
 
     # Get tuple for position, tool and duration so far from queue.
     current_position, current_tool, duration = queue.shift
-    puts "position: %s (%s, %i)" % [current_position.to_s, current_tool.to_s, duration]
 
     # Register current position as visited with duration.
     cave[ current_position ].duration = duration # if duration < cave[ current_position ].duration
@@ -154,22 +128,20 @@ def find_fastest_path(cave, from, target, tool)
     # Reject positions not allowed with current tool.
     possible_positions.reject! { |p| ! is_allowed?(current_tool, cave[ p ]) }
     # Reject positions+tools that are already on the queue.
-    # possible_positions.reject! { |p| queue.select { |q| q[0] == p && q[1] == current_tool }.length > 0 }
+    possible_positions.reject! { |p| queue.select { |q| q[0] == p && q[1] == current_tool && (q[2] <= duration + 1) }.length > 0 }
     # Reject positions that are already visited before.
     possible_positions.reject! { |p| visited[ [p, current_tool] ] && (visited[ [p, current_tool] ] < duration + 1) }
     # Add possible positions to queue.
     possible_positions.each { |p| queue << [p, current_tool, duration + 1] }
-    puts "  positions added to queue: %s" % possible_positions.to_s
 
     # Find allowed tools here minus the current one.
     allowed_tools = allowed_tools(cave[ current_position ]) - [current_tool]
     # Reject positions+tools that are already on the queue.
-    # allowed_tools.reject! { |t| queue.select { |q| q[0] == current_position && q[1] == t }.length > 0 }
+    allowed_tools.reject! { |t| queue.select { |q| q[0] == current_position && q[1] == t && (q[2] <= duration + 7) }.length > 0 }
     # Reject positions that are already visited before.
     allowed_tools.reject! { |t| visited[ [current_position, t] ] && (visited[ [current_position, t] ] < duration + 7) }
     # Add allowed tools for current position to queue.
     allowed_tools.each { |t| queue << [current_position, t, duration + 7] }
-    puts "  tools added to queue: %s" % allowed_tools.to_s
   end
 
   # No path found.
