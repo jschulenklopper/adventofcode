@@ -3,9 +3,9 @@ depth = gets.split(" ")[1].to_i
 target = gets.split(" ")[1].split(",").map(&:to_i)
 mouth = [0,0]
 
-Region = Struct.new(:type, :level, :index)
+Region = Struct.new(:type, :level, :index, :duration)
 
-cave = Hash.new  { |hash, key| hash[key] = Region.new(nil, nil, nil) }
+cave = Hash.new  { |hash, key| hash[key] = Region.new(nil, nil, nil, Float::INFINITY) }
 
 def type_for_level(level)
   case level % 3
@@ -18,6 +18,7 @@ def type_for_level(level)
   end
 end
 
+# TODO This can also be computed as required, instead of at the beginning.
 def compute_type(cave, location, target, depth)
   level = compute_level(cave, location, target, depth) % 3
   type = type_for_level(level)
@@ -92,29 +93,34 @@ def print(cave, mouth, target, area)
   line
 end
 
-def generate_allowed_tools(region)
+def allowed_tools(region)
   abort("unknown region encountered") if region == nil
   case region.type
-  when :rocky
     # In rocky regions, you can use the climbing gear or the torch.
-    [:climbing, :torch]
-  when :wet
+    when :rocky then [:climbing, :torch]
     # In wet regions, you can use the climbing gear or neither tool.
-    [:climbing, :neither]
-  when :narrow
+    when :wet then [:climbing, :neither]
     # In narrow regions, you can use the torch or neither tool.
-    [:neither, :torch]
+    when :narrow then [:neither, :torch]
   end
+end
+
+def is_allowed?(tool, region)
+  allowed_tools(region).include?(tool)
 end
 
 def target_reached?(position, target, tool)
   (position == target && tool == :torch) ? true : false
 end
 
-def generate_new_positions(position)
-  new_positions = [-1, +1].map { |d| [ position[0] + d, position[1] ] } +
-                  [-1, +1].map { |d| [ position[0], position[1] + d ] }
-  new_positions.reject { |p| (p[0] < 0) || (p[1] < 0) }
+def new_positions(position)
+  # Generate positions above, left, right and under.
+  new_pos = [-1, +1].map { |d| [ position[0] + d, position[1] ] } +
+            [-1, +1].map { |d| [ position[0], position[1] + d ] }
+  # Remove positions too far above or left.
+  new_pos.reject! { |p| (p[0] < 0) || (p[1] < 0) }
+  new_pos.reject! { |p| (p[0] > 100) || (p[1] > 900) } # DEBUG
+  new_pos
 end
 
 def estimate(from, to)
@@ -122,70 +128,61 @@ def estimate(from, to)
 end
 
 def find_fastest_path(cave, from, target, tool)
-  # Maintain a queue with positions, tools at that position, and distance so far.
-  queue = [ [from, tool, 0, 100000] ]
-  visited = Hash.new(100000)  # Hashmap of visited positions.
+  # Maintain a queue with position, tool at that position, and duration so far.
+  queue = [ [from, tool, 0] ]
+  visited = Hash.new 
 
   until queue.empty?
-    puts
-    # Get first from distance-sorted queue.
-    queue.sort! { |a,b| a[2] <=> b[2] }
+    puts "\nqueue.length: %i" % queue.length
+    puts "visited.length: %i" % visited.keys.length
+    # Get first from duration-sorted queue.
+    queue.sort! { |a,b| a[2] <=> b[2] }.uniq!  # DEBUG Added `uniq!` instead of checking during adding items.
 
-    # Get tuple for position, tool and distance so far from queue.
-    position, current_tool, distance = queue.shift
+    # Get tuple for position, tool and duration so far from queue.
+    current_position, current_tool, duration = queue.shift
+    puts "position: %s (%s, %i)" % [current_position.to_s, current_tool.to_s, duration]
 
-    # Store position with current tool as visited with distance.
-    visited[ [position, current_tool] ] = distance
-    puts "visit: %s" % [position, current_tool, distance].to_s
-    
-    puts "queue: %s, visited: %i" % [queue.length, visited.keys.length]
-    puts "  first: %s, %s (%i)" % [position.to_s, current_tool.to_s, distance]
+    # Register current position as visited with duration.
+    cave[ current_position ].duration = duration # if duration < cave[ current_position ].duration
+    visited[ [current_position, current_tool] ] = duration
 
-    # Check if target is reached with correct tool.
-    if target_reached?(position, target, current_tool)
-      return [position, current_tool, distance]  # \o/
-    end
+    # If target reached, return position, tool and duration.
+    return [current_position, current_tool, duration] if target_reached?(current_position, target, current_tool)
 
-    # Generate all options for moving. 
-    new_positions = generate_new_positions(position)
-    really_new_positions = new_positions.reject { |p| visited[ [p, current_tool] ] < distance + 1 }
-    allowed_positions = really_new_positions.select { |p| generate_allowed_tools( cave[ p ]).include?(current_tool) }
-    puts "  allowed new positions: %s" % allowed_positions.to_s
-    unqueued_positions = allowed_positions.reject { |p| queue.select { |q| q[0] == p[0] && q[1] == p[1] && q[2] < q[2] } } 
-    puts "   unqueued new positions: %s" % unqueued_positions.to_s
+    # Find possible positions from here.
+    possible_positions = new_positions(current_position)
+    # Reject positions not allowed with current tool.
+    possible_positions.reject! { |p| ! is_allowed?(current_tool, cave[ p ]) }
+    # Reject positions+tools that are already on the queue.
+    # possible_positions.reject! { |p| queue.select { |q| q[0] == p && q[1] == current_tool }.length > 0 }
+    # Reject positions that are already visited before.
+    possible_positions.reject! { |p| visited[ [p, current_tool] ] && (visited[ [p, current_tool] ] < duration + 1) }
+    # Add possible positions to queue.
+    possible_positions.each { |p| queue << [p, current_tool, duration + 1] }
+    puts "  positions added to queue: %s" % possible_positions.to_s
 
-    # New entries for queue are new positions (+1 minute).
-    allowed_positions.each do |new_position|
-      queue << [new_position, current_tool, distance + 1]
-      puts "    added to queue (position): %s" % [new_position, current_tool, distance + 1].to_s
-    end
-
-    # Generate all options for switching tools.
-    new_tools = generate_allowed_tools(cave[ position ]) - [current_tool]
-    really_new_tools = new_tools.reject { |t| visited[ [position, t] ] < distance + 7 }
-    puts "  allowed new tools: %s" % really_new_tools.to_s
-    unqueued_new_tools = really_new_tools.reject { |t| queue.select { |q| q[0] == t[0] && q[1] == t[1] && q[2] < t[2] } }
-    puts "   unqueued new tools: %s" % unqueued_new_tools.to_s
-
-    # New entries for queue are same position but with other tool (+7 minutes).
-    unqueued_new_tools.each do |new_tool|
-      queue << [position, new_tool, distance + 7]
-      puts "    added to queue (tool): %s" % [position, new_tool, distance + 7].to_s
-    end
+    # Find allowed tools here minus the current one.
+    allowed_tools = allowed_tools(cave[ current_position ]) - [current_tool]
+    # Reject positions+tools that are already on the queue.
+    # allowed_tools.reject! { |t| queue.select { |q| q[0] == current_position && q[1] == t }.length > 0 }
+    # Reject positions that are already visited before.
+    allowed_tools.reject! { |t| visited[ [current_position, t] ] && (visited[ [current_position, t] ] < duration + 7) }
+    # Add allowed tools for current position to queue.
+    allowed_tools.each { |t| queue << [current_position, t, duration + 7] }
+    puts "  tools added to queue: %s" % allowed_tools.to_s
   end
 
   # No path found.
   return nil
-
 end
 
-margin = 300
+margin = 200  # This margin isn't needed when we're 'lazy loading' types.
 
 # Compute type for target... and by recursion all other required regions.
 compute_type(cave, [target[0]+margin,target[1]+margin], target, depth)
 
 # You start at 0,0 (the mouth of the cave) with the torch equipped
 # and must reach the target coordinates as quickly as possible.
-if path = find_fastest_path(cave, mouth, target, :torch)
-  puts duration = path.last
+if last_step = find_fastest_path(cave, mouth, target, :torch)
+  puts duration = last_step[2]
 end
