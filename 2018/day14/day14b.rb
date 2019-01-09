@@ -37,12 +37,14 @@ while true
   if recipes.length % 1000000 == 0
     found, from_index = find_target(target, recipes, from_index)
   end
-
   break if found
 
   # Create new recipe, add it to the list.
   new_recipe = new_recipe(recipes, elves)
   new_recipe.each { |r| recipes.append(r) }
+
+  # TODO If new_recipe does not have characters of target.
+  # try to move from_index already.
 
   # Compute new positions of all elves.
   elves = new_positions(recipes, elves)
