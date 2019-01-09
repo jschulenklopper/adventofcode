@@ -26,4 +26,4 @@ powers = Hash.new
   end
 end
 
-puts powers.each.max_by { |k, v| v }.flatten.join(",")
+puts powers.each.max_by { |k, v| v }.flatten[0,2].join(",")
