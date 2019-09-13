@@ -2,7 +2,7 @@
 # Storing ground types. :sand and :spring aren't necessary,
 # :bottom created for better testing.
 # :frontier to manage frontier positions.
-# ground_type = %i(clay water_flow water_rest bottom sand spring) 
+# ground_type = %i(clay water_flow water_rest bottom sand spring frontier) 
 
 def string(ground)
   min_x, max_x = [ground.keys.map { |pos| pos[0] }.min , ground.keys.map { |pos| pos[0] }.max]
@@ -63,55 +63,56 @@ def frontiers(ground)
   ground.select { |k,v| v == :frontier }.keys
 end
 
-# TODO Ambiguous: drop just one area of water, multiple, or continuous until end?
+# Advance every (water drop) frontier one step.
 def drop_water(ground)
   puts "---\ndrop_water(ground)"
 
-  # Move frontiers down, if that's allowed.
-  puts "\n  move frontiers down"
-  frontiers = frontiers(ground)
-  frontiers.each do |position|
-    until ground[ [position[0], position[1] + 1] ]  # Until we hit something...
-      ground[position] = :water_flow
-      position = [position[0], position[1] + 1]
-      ground[position] = :frontier
-    end
+  # Gather all active frontiers.
+  puts "\n  gather frontiers"
+  p frontiers = frontiers(ground)
 
-    # If the water bottoms out, we're done.
+  puts "\n  move frontiers one step"
+  # Advance all frontiers one step.
+  frontiers.each do |position|
+    # If frontier reaches the bottom, we're done.
+    # Turn all frontiers into flowing water and break.
     if ground[position] == :bottom
+      ground.each { |k,v| v = :water_flow if v == :frontier }
       return ground
     end
-  end
 
-  puts string(ground)
+    # If area below frontier is empty, move frontier one step down
+    # and mark the ground as wet.
+    below_position = [ position[0], position[1] + 1 ]
+    if ground[below_position] == nil
+      ground[position] = :water_flow
+      ground[below_position] = :frontier
+      break  # TODO OR use case statement, or multiple if/elsif/else.
+    end
 
-  # So far, so good.
+    # If area below frontier is clay or water, then make ground wet,
+    # and create frontiers left and right if possible.
+    if ground[below_position] == :clay || ground[below_position] == :water_flow
+      ground[position] = :water_flow
 
-  # Put :water_rest to left or right of frontier if both bounded by clay.
-  # puts "\n  put water to left or right"
-  # TODO Perhaps this is only necessary later, converting :water_flow into :water_rest.
+      left_position = [ position[0] - 1, position[1] ]
+      if ground[left_position] == nil
+        ground[left_position] = :frontier
+      end
 
-  # Put :water_flow to left and right of frontier if not bounded by clay; move frontier(s).
-  puts "\n  put water to left or right"
-  frontiers = frontiers(ground)
-  frontiers.each do |position|
-    # Put :water_flow on current position.
-    ground[position] = :water_flow
+      right_position = [ position[0] + 1, position[1] ]
+      if ground[right_position] == nil
+        ground[right_position] = :frontier
+      end
 
-    original_position = position  # Temporarily store original position.
-    # Continue to put :water_flow to the left, and move frontier.
+      break
+    end
 
-
-
-    position = original_position
-    # Continue to put :water_flow to the right, and move frontier.
-  
   end
 
   # Return ground to exit this level.
   ground
 end
-
 
 ground = read_scan(gets(nil))
 springs = [ [500, 0] ]
@@ -120,14 +121,20 @@ drop = 0
 # Positions of where water will appear.
 springs.each { |s| ground[s] = :frontier }
 
+# Show starting position of ground.
+puts "==="
+puts string(ground)
+
 while true
   drop += 1
   puts "===\ndrop %i" % drop
 
+  # Make a new drop to find it's way.
   ground = drop_water(ground)
-
   puts string(ground)
 
+  # Break in case there aren't any frontiers left.
+  break if frontiers(ground).empty?
 end
 
 
