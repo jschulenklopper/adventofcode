@@ -1,17 +1,11 @@
 require '../../aoc'
 
-lines = read_input("2019", "1")
-
 def fuel_needed(mass)
   fuel = (mass.to_i / 3).floor - 2
-  return 0 if fuel < 0
-  return fuel += fuel_needed(fuel)
+  # Increase fuel need for additional fuel needed.
+  if fuel < 0 then 0 else fuel += fuel_needed(fuel) end
 end
 
-fuel_needs = lines.map do |mass|
-  total = 0
-  # Calculate fuel need to module mass.
-  total += fuel = fuel_needed(mass)
-end
+lines = read_input("2019", "1")
 
-puts fuel_needs.sum
+puts lines.map { |mass| fuel_needed(mass) }.sum
