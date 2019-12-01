@@ -1,0 +1,78 @@
+#!/usr/bin/ruby
+require 'open-uri'
+require 'fileutils'
+require 'nokogiri'
+
+COOKIE_JAR = "cookie.txt"
+COOKIE = open(COOKIE_JAR).readline.strip
+PUZZLES_DIR = "puzzles"
+FILENAME = "puzzle.html" 
+
+# NB Output of this script is a directory with all puzzle files,
+# (stripped from non-puzzle text) in HTML format.
+# Those files can be converted to e.g., Markdown with
+#   `find . -name "*.html" | while read i; do pandoc -f html -t markdown_strict "$i" -o "${i%.*}.md"; done` 
+
+def get_puzzles(year)
+  unless year && year.match(/^(\d){4}$/)
+    STDERR.puts("No valid year specified.")
+    exit
+  end
+
+  ("1".."25").each do |day|
+    get_puzzle(year, day)
+    sleep rand(5)
+  end
+end
+
+def get_puzzle(year, day)
+  puts "%s,%s" % [year, day]
+  unless year && day && year.match(/^(\d){4}$/) && day.match(/^(\d){1,2}$/) 
+    STDERR.puts("No valid year and date specified.")
+    exit
+  end
+
+  url = "https://adventofcode.com/%s/day/%s" % [year.to_i, day.to_i]
+
+  puzzle_dirname = "%s/%s/day%02i/" % [PUZZLES_DIR, year.to_i, day.to_i]
+
+  # Open URL and store contents in puzzle file.
+  begin
+    # Make directory if it isn't there yet.
+    unless File.directory?(puzzle_dirname)
+      FileUtils.mkdir_p(puzzle_dirname)
+    end
+
+    puzzle_filename = puzzle_dirname + FILENAME
+
+    # Get and store file if it doesn't exist yet.
+    if File.exists?(puzzle_filename)
+      STDERR.puts "Puzzle file already exists at %s" % puzzle_filename
+    else
+      open(url, "Cookie" => COOKIE) do |remote|
+        File.open(puzzle_filename, "wt") do |local|
+          html = Nokogiri::HTML(remote)
+          html.css('*').remove_attr('class')
+          html.css('*').remove_attr('id')
+          main_articles = html.css("main article")
+          main_articles.each do |article| local.write(article) end
+        end
+      end
+    end
+  rescue OpenURI::HTTPError
+    STDERR.puts("Error reading %s" % url)
+    exit
+  end
+end
+
+# Get puzzle as specified by first and second argument.
+if ARGV[0] && ARGV[1] then
+  get_puzzle(ARGV[0], ARGV[1])
+elsif ARGV[0] then
+  get_puzzles(ARGV[0])
+else
+  STDERR.puts("No year, or year and day specified.")
+  exit
+end
+
+# Outpu
