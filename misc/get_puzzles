@@ -46,7 +46,7 @@ def get_puzzle(year, day)
     puzzle_filename = puzzle_dirname + FILENAME
 
     # Get and store file if it doesn't exist yet.
-    if File.exists?(puzzle_filename)
+    if false && File.exists?(puzzle_filename)
       STDERR.puts "Puzzle file already exists at %s" % puzzle_filename
     else
       open(url, "Cookie" => COOKIE) do |remote|
