@@ -1,8 +1,6 @@
-require '../../aoc'
-
 MAGIC_NUMBER = 19690720
 
-lines = read_input("2019", "2")
+lines = ARGF.readlines
 line = lines.first
 
 # Read instructions into positions.

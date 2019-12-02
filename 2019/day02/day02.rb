@@ -1,6 +1,4 @@
-require '../../aoc'
-
-lines = read_input("2019", "2")
+lines = ARGF.readlines
 
 line = lines.first
 
