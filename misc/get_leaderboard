@@ -1,0 +1,60 @@
+#!/usr/bin/ruby
+require 'open-uri'
+require 'json'
+
+COOKIE_JAR = "cookie.txt"
+COOKIE = open(COOKIE_JAR).readline.strip
+
+URLS = { "xebiaaoc2019" => "https://adventofcode.com/2019/leaderboard/private/view/625617.json",
+         "current" => "https://adventofcode.com/2019/leaderboard/private/view/625617.json",
+         "xebiaaoc" => "https://adventofcode.com/2019/leaderboard/private/view/361157.json",
+         "alumni" => "https://adventofcode.com/2019/leaderboard/private/view/361157.json"
+        }
+
+def get_leaderboard(url)
+  begin
+    open(url, "Cookie" => COOKIE) do |lb|
+      lb.read
+    end
+  rescue OpenURI::HTTPError
+    STDERR.puts("Error reading %s" % url)
+    exit
+  end
+end
+
+def analyse_leaderboard(leaderboard)
+  lb = JSON.parse(leaderboard)
+
+  nr_members = 0
+  total_nr_stars = 0
+
+  puts "Analysis of %s private leaderboard" % lb["event"]
+  puts "==="
+
+  lb["members"].each do |member|
+    nr_members += 1
+
+    puts "\n%s" % name = member[1]["name"]
+    puts "---"
+
+    nr_stars = member[1]["stars"]
+    total_nr_stars += nr_stars
+
+    completions = member[1]["completion_day_level"]
+
+    
+  end
+
+  puts "\n---"
+  puts "total number of members: %s" % nr_members
+  puts "total number of stars: %s" % total_nr_stars
+end
+
+if ARGF then
+  analyse_leaderboard(ARGF.read)
+# if ARGV[0] && URLS[ ARGV[0] ] then
+  # leaderboard = get_leaderboard(URLS[ ARGV[0] ])
+  # analyse_leaderboard(leaderboard)
+else
+  STDERR.puts("No leaderboard (or alias) specified.")
+end
