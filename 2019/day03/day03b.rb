@@ -5,35 +5,23 @@ ARGF.each_line do |line|
   wires << directions
 end
 
+# Gather all positions covered by all wires.
 positions = Array.new
-
 wires.each do |directions|
   pos = Array.new
 
   position = [0,0,0]  # X, Y, number of steps
 
   directions.each do |dir, dis|
-    case dir
-    when "U"
-      then dis.times {
-        position[1] -= 1
-        position[2] += 1
-        pos << position.dup }
-    when "R"
-      then dis.times {
-        position[0] += 1
-        position[2] += 1
-        pos << position.dup }
-    when "D"
-      then dis.times {
-        position[1] += 1
-        position[2] += 1
-        pos << position.dup }
-    when "L"
-      then dis.times {
-        position[0] -= 1
-        position[2] += 1
-        pos << position.dup }
+    dis.times do
+      case dir
+        when "U" then position[1] -= 1
+        when "R" then position[0] += 1
+        when "D" then position[1] += 1
+        when "L" then position[0] -= 1
+      end
+      position[2] += 1
+      pos << position.dup 
     end
   end
   positions << pos
