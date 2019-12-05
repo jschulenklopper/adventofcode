@@ -5,7 +5,7 @@ require 'nokogiri'
 
 COOKIE_JAR = "cookie.txt"
 COOKIE = open(COOKIE_JAR).readline.strip
-PUZZLES_DIR = "puzzles"
+PUZZLES_DIR = "../puzzles"
 FILENAME = "puzzle.html" 
 
 # NB Output of this script is a directory with all puzzle files,
