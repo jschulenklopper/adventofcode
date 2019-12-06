@@ -3,6 +3,7 @@ RANGE = (248345..746315)  # TODO Read input file properly.
 count = 0
 
 # Rule: The value is within the range given in your puzzle input.
+# TODO This can be changed to a chain of map commands, which might look better.
 RANGE.each do |num|
   number = num.to_s
   # Rule: It is a six-digit number.
