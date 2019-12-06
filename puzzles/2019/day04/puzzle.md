@@ -18,7 +18,8 @@ However, they do remember a few key facts about the password:
 Other than the range rule, the following are true:
 
 -   `111111` meets these criteria (double `11`, never decreases).
--   `223450` does not meet these criteria (decreasing pair of digits `50`).
+-   `223450` does not meet these criteria (decreasing pair of digits
+    `50`).
 -   `123789` does not meet these criteria (no double).
 
 *How many different passwords* within the range given in your puzzle
