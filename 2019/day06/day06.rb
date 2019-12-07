@@ -20,8 +20,4 @@ def tree(orbits, root)
   end
 end
 
-def count(map)
-  
-end
-
 puts count_paths(0, tree(orbits, "COM"))
