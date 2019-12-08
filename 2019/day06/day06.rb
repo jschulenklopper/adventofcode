@@ -12,6 +12,7 @@ def tree(orbits, root)
 end
 
 # Compute cummulative length of all possible paths through tree.
+# TODO This could be more concise...
 def count_paths(length_so_far, tree)
   if tree[1]
     length_so_far += tree[1].map { |t| count_paths(length_so_far+1, t) }.reduce(&:+)
