@@ -49,8 +49,6 @@ end
 STEPS = 1000
 
 STEPS.times do |i|
-  # moons.each do |moon| puts moon end
-
   moons.combination(2).each do |one, two| one.apply_gravity(two) end
 
   moons.each do |moon| moon.apply_velocity end
