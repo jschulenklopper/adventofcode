@@ -34,9 +34,9 @@ while true do
     pc += 4
   when 3 then  # opcode 3: store # TOFIX: pc+3 can't be right, modes[2] neither
     if (modes[2] == 0) then
-      program[ program[pc + 3] ] = input
+      program[ program[pc + 1] ] = input
     else
-       program[pc+3] = input
+       program[pc+1] = input
     end
     pc += 2
   when 4 then  # opcode 4: output
