@@ -63,11 +63,11 @@ phase_settings = [0,1,2,3,4]
 phase_combinations = phase_settings.permutation.map
 
 signals = phase_combinations.map do |p|
-  a = run(program.dup, 0, [p.shift, 0])
-  b = run(program.dup, 0, [p.shift, a])
-  c = run(program.dup, 0, [p.shift, b])
-  d = run(program.dup, 0, [p.shift, c])
-  e = run(program.dup, 0, [p.shift, d])
+  input = 0
+  p.each do |phase|
+    input = run(program, 0, [phase, input])
+  end
+  input
 end
 
 puts signals.max
