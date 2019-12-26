@@ -16,8 +16,9 @@ def count_neighbor_bugs(grid)
   grid.each do |pos, _|
     x,y = pos
     neighbors[pos] = grid.count { |cell, value|
-      (value == "#" && (cell[0]-x).abs == 1 && cell[1]-y == 0) || 
-      (value == "#" && (cell[1]-y).abs == 1 && cell[0]-x == 0)
+      dx, dy = cell
+      (value == "#" && (dx-x).abs == 1 && dy-y == 0) || 
+      (value == "#" && (dy-y).abs == 1 && dx-x == 0)
     }
   end
 
