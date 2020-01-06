@@ -32,7 +32,7 @@ while true do
        program[pc+3] = first * second
     end
     pc += 4
-  when 3 then  # opcode 3: store # TOFIX: pc+3 can't be right, modes[2] neither
+  when 3 then  # opcode 3: store
     if (modes[2] == 0) then
       program[ program[pc + 1] ] = input
     else
