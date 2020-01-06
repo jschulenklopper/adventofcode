@@ -39,7 +39,7 @@ def run(program, pc = 0, input = 0)
       program[third_address] = program[first_address] * program[second_address]
       pc += 4
     when 3 then  # opcode 3: store
-      program[third_address] = input
+      program[third_address] = input  # TOFIX: second address? first address?
       pc += 2
     when 4 then  # opcode 4: output
       puts program[first_address]
@@ -76,6 +76,8 @@ begin
   pc = 0
   while true
     # Set up standard output as a StringIO object.
+
+    # TODO Use Queue and Ruby threads to communicate.
     $stdout = StringIO.new
 
     # Run program. Output is captured in $stdout.

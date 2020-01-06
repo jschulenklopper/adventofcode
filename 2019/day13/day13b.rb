@@ -79,7 +79,6 @@ def run(program, pc = 0, read_input, process_output)
   end
 end
 
-
 def find_ball()
   $screen.key(4)  # Find key (position) where value (id) in $screen is 4.
 end
