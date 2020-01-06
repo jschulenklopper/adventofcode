@@ -17,8 +17,10 @@ def count_neighbor_bugs(grid)
     x,y = pos
     neighbors[pos] = grid.count { |cell, value|
       dx, dy = cell
-      (value == "#" && (dx-x).abs == 1 && dy-y == 0) || 
-      (value == "#" && (dy-y).abs == 1 && dx-x == 0)
+      value == "#" && (
+        ((dx-x).abs == 1 && dy-y == 0) || 
+        ((dy-y).abs == 1 && dx-x == 0)
+      )
     }
   end
 
