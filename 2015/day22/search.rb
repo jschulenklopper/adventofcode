@@ -1,37 +1,36 @@
 def dfs(start, goal, f_moves)
   stack = [start]
   
-  while true do
-    current = stack.shift
-
-    return false if current == nil
+  while current = stack.shift do
     return true if current == goal
 
+    # This is a test to handle different ways a function can be passed to this method.
     if f_moves.is_a? Proc
       next_nodes = f_moves.call(current).reverse.each { |node| stack.unshift(node) }
     else
+      # Make `f_moves` a Proc object.
       next_nodes = method(f_moves).call(current).reverse.each { |node| stack.unshift(node) }
     end
   end
+  false
 end
 
 
 def bfs(start, goal, f_moves)
   queue = [start]
   
-  while true do
-    current = queue.shift
-
-    return false if current == nil
+  while current = queue.shift do
     return true if current == goal
 
+    # This is a test to handle different ways a function can be passed to this method.
     if f_moves.is_a? Proc
       next_nodes = f_moves.call(current).each { |node| queue.push(node) }
     else
+      # Make `f_moves` a Proc object.
       next_nodes = method(f_moves).call(current).each { |node| queue.push(node) }
     end
-
   end
+  false
 end
 
 # Different ways to specify functions that generate moves.
