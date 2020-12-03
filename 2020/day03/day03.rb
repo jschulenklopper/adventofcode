@@ -4,6 +4,9 @@ TREE = "#"
 NR_COLUMNS = forest.first.length
 NR_ROWS = forest.length
 
+
+puts "part 1"
+
 slope = [3, 1]  # Steps right, steps down.
 nr_trees = 0
 
@@ -14,8 +17,10 @@ until row >= NR_ROWS
   row += slope.last
 end
 
-puts "part 1"
 puts nr_trees
+
+
+puts "part 2"
 
 slopes = [ [1,1], [3,1], [5,1], [7,1], [1,2] ]
 multiple_trees = 1
@@ -31,5 +36,4 @@ slopes.each do |right, down|
   multiple_trees *= nr_trees
 end
 
-puts "part 2"
 puts multiple_trees
