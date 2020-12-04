@@ -11,7 +11,7 @@ valid = 0
 passports.each do |passport|
   # Get all passport fields.
   fields = passport.split(" ")
-  # Get just the keys of the passwords.
+  # Get just the keys of the passports.
   keys = fields.map { |field| field.split(":").first }
   # Check whether all required keys are present.
   valid += 1 if (required - keys).length == 0
@@ -22,6 +22,7 @@ puts valid
 
 puts "part 2"
 
+# Specify a function to check the value for a passport key.
 $check = lambda do |key, value|
   case key
   when "byr" then value.to_i.between?(1920, 2002)
@@ -39,17 +40,16 @@ end
 
 valid = 0
 passports.each do |passport|
+  # Build array of key-value pairs.
   pairs = passport.split(" ").map { |field| field.split(":") }
-  keys = passport.split(" ").map { |field| field.split(":").first }
 
   # Check whether required fields are present.
-  values_present = (required - keys).length == 0
+  keys_present = (required - pairs.map(&:first)).length == 0
   # Check whether values are valid.
   value_invalid = pairs.map { |key, value| $check.call(key, value)}.include?(false)
 
-  # It's valid if all values are present and no values are invalid.
-  valid += 1 if values_present && ! value_invalid
+  # It's valid if all required keys are present and no values are invalid.
+  valid += 1 if keys_present && ! value_invalid
 end
 
 puts valid
-
