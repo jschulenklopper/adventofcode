@@ -3,8 +3,7 @@ passes = ARGF.readlines.map(&:strip)
 puts "part 1"
 seats = passes.map { |pass|
    # Compute seat ID.
-   pass[0,7].gsub(/[FB]/, 'F' => "0", 'B' => "1").to_i(2) * 8 +
-   pass[7,3].gsub(/[LR]/, 'L' => "0", 'R' => "1").to_i(2)
+   pass.gsub(/[FBLR]/, 'F' => "0", 'B' => "1", 'L' => "0", 'R' => "1").to_i(2)
 }
 puts seats.max
 
