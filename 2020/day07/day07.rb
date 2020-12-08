@@ -13,16 +13,15 @@ end
 
 puts "part 1"
 
-def containers_of(bag)
-  # Find bags where bag can be inside of.
-  containers = $rules.select { |outside, inside|
+def contain(bag)
+  # Find bags that can be inside bag.
+  bags = $rules.select { |outside, inside|
     inside.select { |nr, color| color == bag }.length > 0
-  }
-  first = containers.map(&:first)
-  # Find bags where those bags can be inside of.
-  more = first.map { |color| containers_of(color) }.flatten.uniq
+  }.map(&:first)
+  # Find bags that can be inside all those bags.
+  inside = bags.map { |color| contain(color) }
   # Add those two lists.
-  first + more
+  (bags + inside.flatten).uniq
 end
 
-puts containers_of("shiny gold").length
+puts contain("shiny gold").length
