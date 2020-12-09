@@ -15,11 +15,11 @@ puts invalid
 
 puts "part 2"
 
-numbers.each.with_index do |number, i|
+numbers.each_index do |i|
   # Build ranges (of different lengths).
-  (2 .. numbers.length-i).select do |length|
+  (2 .. numbers.length-i).each do |length|
     range = numbers[i, length]
-    # If sum of range equals invalid, return sum of lowest and highest number in range.
-    puts range.sort.first + range.sort.last if range.sum == invalid
+    # If sum of range equals invalid, return sum of max and min in range.
+    puts range.min + range.max if range.sum == invalid
   end
 end
