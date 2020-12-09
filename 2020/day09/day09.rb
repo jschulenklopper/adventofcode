@@ -9,12 +9,17 @@ invalid = numbers[preamble, numbers.length-1].select.with_index do |number, i|
   sums = numbers[i, preamble].combination(2).map(&:sum)
   # If number isn't in list of sums, we've found the invalid number.
   number unless sums.include?(number)
-end  
+end.first
 
 puts invalid
 
 puts "part 2"
 
 numbers.each.with_index do |number, i|
-  # Build list of sums of ranges (of different lengths).
+  # Build ranges (of different lengths).
+  (2 .. numbers.length-i).select do |length|
+    range = numbers[i, length]
+    # If sum of range equals invalid, return sum of lowest and highest number in range.
+    puts range.sort.first + range.sort.last if range.sum == invalid
+  end
 end
