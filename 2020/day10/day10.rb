@@ -1,17 +1,15 @@
-p adapters = ARGF.readlines.map(&:to_i)
+adapters = ARGF.readlines.map(&:to_i)
 
 puts "part 1"
 
-# Add charging outlet
+# Add charging outlet and sort adapters.
 adapters << 0
-
-# Sort adapters.
-sorted = adapters.sort
+adapters.sort!
 
 # Build map of differences between successive elements.
-differences = sorted.map.with_index { |adapter, index| 
-  if index < sorted.length - 1
-    sorted[index+1] - adapter 
+differences = adapters.map.with_index { |adapter, index| 
+  if index < adapters.length - 1
+    adapters[index+1] - adapter 
   else
     3
   end
