@@ -3,7 +3,7 @@ $layout = Hash.new
 # Read seat layout.
 ARGF.readlines.each.with_index { |row, r|
   row.strip.chars.each.with_index { |seat, c|
-    $layout[[r,c]] = seat
+    $layout[[r,c]] = seat unless c == "."
   }
 }
 
@@ -42,7 +42,7 @@ def round_part_1(layout)
   new_layout = Hash.new
 
   layout.each do |key, seat|
-    occupied = count_in_sight(layout,key)
+    occupied = count_neighbors(layout,key) unless layout[key] == "."
     case seat
       when "L" then new_layout[key] = (occupied == 0) ? "#" : layout[key]
       when "#" then new_layout[key] = (occupied >= 4) ? "L" : layout[key]
@@ -56,7 +56,7 @@ def round_part_2(layout)
   new_layout = Hash.new
 
   layout.each do |key, seat|
-    occupied = count_in_sight(layout,key)
+    occupied = count_in_sight(layout,key) unless layout[key] == "."
     case seat
       when "L" then new_layout[key] = (occupied == 0) ? "#" : layout[key]
       when "#" then new_layout[key] = (occupied >= 5) ? "L" : layout[key]
@@ -66,33 +66,24 @@ def round_part_2(layout)
   new_layout
 end
 
-def str(layout)
-  str = ""
-  layout.keys.sort.each do |r,c|
-    str += "\n" if c == 0
-    seat = layout[ [r,c] ]
-    str += seat
-  end
-  str
-end
-
 puts "part 1"
 
 layout = $layout
 while true
   new_layout = round_part_1(layout)
-  break if str(layout) == str(new_layout)
+  break if layout == new_layout
   layout = new_layout
 end
-puts str(layout).chars.count("#")
+
+puts layout.select { |k,v| v == "#"}.count
 
 puts "part 2"
 
 layout = $layout
 while true
   new_layout = round_part_2(layout)
-  break if str(layout) == str(new_layout)
+  break if layout == new_layout
   layout = new_layout
 end
 
-puts str(layout).chars.count("#")
+puts layout.select { |k,v| v == "#"}.count
