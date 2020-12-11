@@ -3,63 +3,38 @@ $layout = Hash.new
 # Read seat layout.
 ARGF.readlines.each.with_index { |row, r|
   row.strip.chars.each.with_index { |seat, c|
-    $layout[[r,c]] = seat unless c == "."
+    $layout[[r,c]] = seat
   }
 }
 
-def count_neighbors(layout, key)
-  deltas = [ [-1,-1], [-1, 0], [-1, +1],
-             [ 0,-1],          [ 0, +1],
-             [ 1,-1], [ 1, 0], [ 1, +1] ]
-  deltas.select { |delta_r, delta_c|
-    new_key = [key[0] + delta_r, key[1] + delta_c] 
-    layout[ new_key ] == "#"
-  }.count
-end
-
-# TODO This can be merged into count_neighbors().
-def count_in_sight(layout, key)
+def count_in_sight(layout, key, adjacent)
   deltas = [ [-1,-1], [-1, 0], [-1, +1],
              [ 0,-1],          [ 0, +1],
              [+1,-1], [+1, 0], [+1, +1] ]
   # Investigate all seats in sight in all directions.
   deltas.select { |delta|
     found = false
-    border = false
     new_key = [ key[0], key[1] ]
-    until found || border do
+    until found do
       # Apply delta (movement).
       new_key = [ new_key[0] + delta[0], new_key[1] + delta[1] ]
-      # Check whether border or neighbor has been found.
-      border = true if layout[new_key] == nil || layout[new_key] == "L"
+      # Check whether occupied seat has been found.
       found = true if layout[new_key] == "#"
+      # Break if beyond the grid, at an empty seat, or just checking neighbors.
+      break if layout[new_key] == nil || layout[new_key] == "L" || adjacent
     end
     found
   }.count
 end
 
-def round_part_1(layout)
+def round(layout, max_occupancy)
   new_layout = Hash.new
 
   layout.each do |key, seat|
-    occupied = count_neighbors(layout,key) unless layout[key] == "."
+    occupied = count_in_sight(layout,key, true) unless seat == "."
     case seat
       when "L" then new_layout[key] = (occupied == 0) ? "#" : layout[key]
-      when "#" then new_layout[key] = (occupied >= 4) ? "L" : layout[key]
-      else          new_layout[key] = layout[key]
-    end
-  end
-  new_layout
-end
-
-def round_part_2(layout)
-  new_layout = Hash.new
-
-  layout.each do |key, seat|
-    occupied = count_in_sight(layout,key) unless layout[key] == "."
-    case seat
-      when "L" then new_layout[key] = (occupied == 0) ? "#" : layout[key]
-      when "#" then new_layout[key] = (occupied >= 5) ? "L" : layout[key]
+      when "#" then new_layout[key] = (occupied >= max_occupancy) ? "L" : layout[key]
       else          new_layout[key] = layout[key]
     end
   end
@@ -70,7 +45,7 @@ puts "part 1"
 
 layout = $layout
 while true
-  new_layout = round_part_1(layout)
+  new_layout = round(layout, 4)
   break if layout == new_layout
   layout = new_layout
 end
@@ -81,7 +56,7 @@ puts "part 2"
 
 layout = $layout
 while true
-  new_layout = round_part_2(layout)
+  new_layout = round(layout, 5)
   break if layout == new_layout
   layout = new_layout
 end
