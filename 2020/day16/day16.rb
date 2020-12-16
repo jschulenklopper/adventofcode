@@ -11,8 +11,10 @@ while line = ARGF.readline.strip do
   $fields << field.to_sym
 end
 
-# TODO This can be improved; handle if multiple blank lines separate sections.
-line = ARGF.readline.strip until "your ticket:" == line 
+loop do
+  line = ARGF.readline.strip
+  break if "your ticket:" == line
+end
   
 # Read numbers on ticket.
 $ticket = []
@@ -21,8 +23,10 @@ while line = ARGF.readline.strip do
   $ticket = line.split(",").map(&:to_i)
 end
 
-# TODO This can be improved.
-line = ARGF.readline.strip until "nearby tickets:" == line 
+loop do
+  line = ARGF.readline.strip 
+  break if "nearby tickets:" == line 
+end
 
 # Read number on nearby tickets.
 $nearby = ARGF.readlines.map { |line| line.strip.split(",").map(&:to_i) }
@@ -99,4 +103,3 @@ puts "part 2"
 puts $ticket.map.with_index { |value, index|
   value if mapping[index].first.to_s.start_with?("departure")
 }.compact.reduce(:*)
-
