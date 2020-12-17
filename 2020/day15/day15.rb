@@ -2,20 +2,18 @@ $numbers = ARGF.readline.split(",").map(&:to_i)
 
 def play_game(rounds, initial_numbers)
   last = initial_numbers.last
-  spoken = {}  # Mapping of number => rounds that number was spoken.
+  # Mapping of number => rounds in which that number was spoken.
+  spoken = Hash.new { |hash, key| hash[key] = [] }
   initial_numbers.each.with_index { |n, i| spoken[n] = [i+1] }
 
-  (1 .. rounds).each do |round|
-    next if initial_numbers[round-1]
+  rounds.times do |round|
+    next if initial_numbers[round]
     if spoken[last].length < 2
-      spoken[0] << round
-      last = 0
+      last = difference = 0
     else
-      difference = spoken[last][-1] - spoken[last][-2]
-      spoken[difference] = [] unless spoken[difference]
-      spoken[difference] << round
-      last = difference
+      last = difference = spoken[last][-1] - spoken[last][-2]
     end
+    spoken[difference] << round + 1
   end
   last
 end
