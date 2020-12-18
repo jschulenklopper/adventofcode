@@ -12,13 +12,7 @@ class Integer
 end
 
 puts "part 1"
-puts expressions.reduce(0) { |sum, expression|
-  mod_expression = expression.gsub("+", "%")
-  sum += eval(mod_expression)
-}
+puts expressions.sum { |expression| eval(expression.gsub("+", "%")) }
 
 puts "part 2"
-puts expressions.reduce(0) { |sum, expression|
-  mod_expression = expression.gsub("+", "**")
-  sum += eval(mod_expression)
-}
+puts expressions.sum { |expression| eval(expression.gsub("+", "**")) }
