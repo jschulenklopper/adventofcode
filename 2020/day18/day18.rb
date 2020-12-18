@@ -1,12 +1,10 @@
 expressions = ARGF.readlines.map(&:strip)
 
 class Integer
-  def %(operand)
-    # `%` has the same precedence as `*`.
+  def %(operand)   # Overload `%` operator to do addition.
     self + operand
   end
-  def **(operand)
-    # `**` has higher precedence than `*`.
+  def **(operand)  # Overload `**` operator to do addition too.
     self + operand
   end
 end
