@@ -41,7 +41,6 @@ while line = lines.shift
   rules[id.to_i] = eval("lambda { |msg| %s }" % [expression_for(expression)])
 end
 
-# Read all the messages.
 messages = []
 while line = lines.shift
   messages << line
@@ -57,8 +56,3 @@ messages.each do |message|
 end
 
 puts count
-
-# Ideas:
-# - Transform rules to lambda functions, and evaluation those for a match on message.
-# - Transform rules to one big regexp, and see whether that matches message.
-# - Build tree of rules and then do something smart? DFS on a match?
