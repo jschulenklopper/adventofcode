@@ -1,5 +1,4 @@
-card_key = ARGF.readline.to_i
-door_key = ARGF.readline.to_i
+card_key, door_key = ARGF.readlines.map(&:to_i)
 
 SUBJECT, MOD = 7, 20201227
 
