@@ -18,7 +18,7 @@ def one_move(circle, current, lowest, highest)
   # Select new current cup: next cup clockwise.
   current = circle[current]
 
-  [circle, current]
+  current
 end
 
 puts "part 1"
@@ -32,7 +32,7 @@ lowest, highest = $cups.min, $cups.max
 current = $cups[0]
 
 100.times do |i|
-  circle, current = one_move(circle, current, lowest, highest)
+  current = one_move(circle, current, lowest, highest)
 end
 
 start = 1
@@ -50,7 +50,7 @@ lowest, highest = $cups.min, $cups.max
 current = $cups[0]
 
 10000000.times do |i|
-  circle, current = one_move(circle, current, lowest, highest)
+  current = one_move(circle, current, lowest, highest)
 end
 
 puts circle[1] * circle[circle[1]]
