@@ -10,7 +10,7 @@ def regexp_for(id, expression, root = false)
         p.to_i == id ? "\\g<r#{p.to_i}>?" : regexp_for(p.to_i, $rules[p.to_i])
       end.join
     else  
-      regexp = "(%s)" % parts.map { |p| regexp_for(p.to_i, $rules[p.to_i]) }.join
+      regexp = "%s" % parts.map { |p| regexp_for(p.to_i, $rules[p.to_i]) }.join
     end
   end
   root ? "^%s$" % regexp : regexp
