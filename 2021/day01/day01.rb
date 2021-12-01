@@ -1,19 +1,12 @@
 depths = ARGF.readlines.map(&:to_i)
 
 puts "part 1"
-# Select only the measurements larger than the previous measurement.
-puts depths.select.with_index { |depth, i|
-  depth > depths[i-1] && i > 0
-}.length
+# For all consecutive pairs, select only values larger than the previous one.
+puts depths.each_cons(2).select { |first, second| second > first }.length
 
-
-# Build a list of measurement windows.
-windows = depths.map.with_index { |depth, i|
-  depths[i-2, 3].sum
-}
+# Sum depth measurements in windows of length 3.
+windows = depths.each_cons(3).map { |a| a.sum }
 
 puts "part 2"
 # Select only the measurement windows larger than the previous one.
-puts windows.select.with_index { |depth, i|
-  depth > windows[i-1] && i > 2
-}.length
+puts windows.each_cons(2).select { |first, second| second > first }.length
