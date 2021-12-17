@@ -15,8 +15,8 @@ puts "part 1"
 puts gamma * epsilon
 
 # Make specific sort function for a tally.
-def sort_tally(a,b)
-  [a[1], a[0]] <=> [b[1],b[0]]
+def sort_tally(a, b, direction)
+  direction * ([a[1], a[0]] <=> [b[1],b[0]])
 end
 
 # Find rating.
@@ -24,7 +24,7 @@ def rating(numbers, dir)
   numbers.first.length.times do |i|
     # Find most/least common bit on position i.
     tally = numbers.map { |n| n[i] }.tally
-    most = tally.to_a.sort { |a,b| sort_tally(a,b) * dir }.last
+    most = tally.to_a.sort { |a,b| sort_tally(a,b,dir) }.last
     # Reject the numbers not matching the most/least common bit.
     numbers.reject! { |n| n[i] != most[0] }
   end
