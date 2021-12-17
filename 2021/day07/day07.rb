@@ -1,28 +1,24 @@
-positions = ARGF.readline.split(",").map(&:to_i)
-
-sorted = positions.sort
-length = positions.length
+positions = ARGF.readline.split(",").map(&:to_i).sort  # NOTE Sort it now.
+l = positions.length
 
 # Compute median position.
-median = ((sorted[(length - 1) / 2] + sorted[length / 2]) / 2.0).floor
+median = (positions[(l - 1) / 2] + positions[l / 2]) / 2
 
-# Compute fuel required to move to median position.
 puts "part 1"
-puts positions.reduce(0) { |memo, position| memo += (position - median).abs }
-
-# Compute fuel to cover distance.
-def fuel(distance, steps=1)
-  (distance == 0) ? 0 : fuel(distance-1, steps+1) + steps
-end
+puts positions.map { |position|
+  (position - median).abs  # Fuel to move to median.
+}.sum  # Sum all the individual fuel needs.
 
 puts "part 2"
 # For all possible 'medians'
-puts (sorted.first .. sorted.last).map { |m|
+puts (positions.first .. positions.last).map { |median|
   # ... for each of the positions
-  positions.map { |p|
+  positions.map { |position|
   # ... compute the required fuel for each crab
-    fuel( (m-p).abs )
-  # ... sum the fuel
+    # ... with the formula for triangular numbers
+    distance = median - position
+    distance.abs * (distance.abs + 1) / 2
+  # ... then sum the fuel needs
   }.sum
-# ... and take the lowest cost.
+# ... and finally take the lowest.
 }.min
