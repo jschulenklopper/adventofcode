@@ -9,9 +9,7 @@ end
 grid = Hash.new { |k,v| 0 }
 
 # Process the horizontal lines.
-vents.each do |fx, fy, tx, ty|
-  next unless fx == tx || fy == ty
-
+vents.select { |fx,fy,tx,ty| (fx==tx)||(fy==ty) }.each do |fx,fy,tx,ty|
   if fx > tx then fx,tx = tx,fx end
   if fy > ty then fy,ty = ty,fy end
   (fx .. tx).each do |x|
@@ -25,9 +23,7 @@ puts "part 1"
 puts grid.values.select { |v| v > 1 }.count
 
 # Process the diagonal lines.
-vents.each do |fx, fy, tx, ty|
-  next if (fx == tx || fy == ty)
-
+vents.select { |fx,fy,tx,ty| (fx!=tx)&&(fy!=ty) }.each do |fx,fy,tx,ty|
   if fx > tx then dx = -1 else dx = 1 end
   if fy > ty then dy = -1 else dy = 1 end
   ((fx-tx).abs + 1).times do
