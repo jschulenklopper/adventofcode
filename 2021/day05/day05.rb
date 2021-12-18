@@ -9,8 +9,7 @@ end
 grid = Hash.new { |k,v| 0 }
 
 # Process the horizontal lines.
-vents.each do |vent|
-  fx, fy, tx, ty = vent
+vents.each do |fx, fy, tx, ty|
   next unless fx == tx || fy == ty
 
   if fx > tx then fx,tx = tx,fx end
@@ -26,8 +25,7 @@ puts "part 1"
 puts grid.values.select { |v| v > 1 }.count
 
 # Process the diagonal lines.
-vents.each do |vent|
-  fx, fy, tx, ty = vent
+vents.each do |fx, fy, tx, ty|
   next if (fx == tx || fy == ty)
 
   if fx > tx then dx = -1 else dx = 1 end
@@ -40,4 +38,4 @@ vents.each do |vent|
 end
 
 puts "part 2"
-p grid.values.select { |v| v > 1 }.count
+puts grid.values.select { |v| v > 1 }.count
