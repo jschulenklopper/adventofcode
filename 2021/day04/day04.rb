@@ -29,9 +29,7 @@ numbers.each do |drawn|
   boards.each do |id, board|
     board.each.with_index do |row, r|
       row.each.with_index do |number, n|
-        if number == drawn
-          boards[id][r][n] = nil
-        end
+        boards[id][r][n] = nil if number == drawn
       end
     end
   end
