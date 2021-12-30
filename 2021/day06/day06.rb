@@ -3,7 +3,9 @@ fish = ARGF.readline.split(",").map(&:to_i)
 $memo = Hash.new
 
 def yields(birth, max_day)
-  return $memo["%i,%i" % [birth, max_day]] if $memo["%i,%i" % [birth, max_day]]
+  # Build key for memoization.
+  key = "%i,%i" % [birth, max_day]
+  return $memo[key] if $memo["%i,%i" % [birth, max_day]]
 
   # No opportunity to create more fish.
   return 1 if birth >= max_day
@@ -14,7 +16,7 @@ def yields(birth, max_day)
   indirect = yields(birth + 9, max_day)
 
   # Yield direct and indirect descendants (and store in $memo).
-  $memo["%i,%i" % [birth, max_day]] = direct + indirect
+  $memo[key] = direct + indirect
 end
 
 puts "part 1"
