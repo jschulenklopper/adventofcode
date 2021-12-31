@@ -12,10 +12,7 @@ end
 
 def neighbors(key)
   r, c = key[0], key[1]
-  delta = [ [-1,-1], [-1, 0], [-1,1],
-            [ 0,-1],          [ 0,1],
-            [ 1,-1], [ 1, 0], [ 1,1] ]
-
+  delta = [ [-1,-1],[-1, 0],[-1,1],[ 0,-1],[ 0,1],[ 1,-1],[ 1, 0],[ 1,1] ]
   delta.map { |dr,dc| [r+dr, c+dc] }
 end
 
@@ -26,8 +23,7 @@ def step(octos)
   loop do
     # Octopuses with energy level greater than 9 flash.
     # Collect neighbors that will be affected by that.
-    around = octos.filter { |_, value| value > 9 }
-                  .map do |key, value|
+    around = octos.filter { |_, value| value > 9 } .map do |key, value|
       # Increase energy level so it won't be selected later.
       octos[key] = -10
 
@@ -39,9 +35,7 @@ def step(octos)
     break if around.size == 0
 
     # Flashing octopuses cause neighbors to increase in energy.
-    increased = around.each do |key|
-      octos[key] += 1
-    end.count
+    increased = around.each { |key| octos[key] += 1 }.count
   end
 
   # Count flashed octopuses, reset energy level back to 0.
@@ -58,14 +52,14 @@ while true
   octos, flashed = step(octos)
   total_flashed += flashed
 
+  if step == 100
+    puts "part 1"
+    puts total_flashed
+  end
+
   if flashed == octos.length
     puts "part 2"
     puts step
     exit
-  end
-
-  if step == 100
-    puts "part 1"
-    puts total_flashed
   end
 end
