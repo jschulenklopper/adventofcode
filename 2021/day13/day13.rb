@@ -1,4 +1,4 @@
-dots, instructions, paper = [], [], Hash.new
+instructions, paper = [], Hash.new
 
 ARGF.readlines.map(&:strip).each do |line|
   if match = line.match(/(\d+),(\d+)/)
