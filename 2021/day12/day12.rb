@@ -1,27 +1,21 @@
 connections = ARGF.readlines.map(&:strip).map { |line| line.split("-") }
 
-def downcase?(cave)
-  cave.downcase == cave
-end
-
 def valid?(path, allowed_small_caves)
   # Path is false if `start` or `end` occur more than once.
-  return false if path.count("start") > 1
-  return false if path.count("end") > 1
+  return false if path.count("start") > 1 || path.count("end") > 1
 
-  # Path is false if two or more small cave occur more than once.
-  return false if path.filter { |p| downcase?(p) }.tally.values.count(2) > allowed_small_caves
+  # Path is false if two or more small caves occur more than once.
+  return false if path.filter { |p| p.downcase == p }.tally.values.count(2) > allowed_small_caves
 
   # Path is false if a small cave occurs.
-  return false if path.filter { |p| downcase?(p) }.tally.values.count { |v| v >= 3 } > 0
+  return false if path.filter { |p| p.downcase == p }.tally.values.count { |v| v >= 3 } > 0
 
+  # No problem found in path.
   true
 end
 
 def paths(start, goal, prefix, map, allowed_small_caves, &block)
-  if start == goal
-    yield prefix + [goal]
-  end
+  yield prefix + [goal] if start == goal
 
   # Figure out next steps from `start`, take into account earlier nodes.
   steps = map[start].filter do |cave|
@@ -37,18 +31,17 @@ end
 def map(connections)
   map = Hash.new { |hash, key| hash[key] = [] }
   connections.each do |from,to|
-    map[from] << to
-    map[to] << from
+    map[from] << to; map[to] << from
   end
   map
 end
 
 puts "part 1"
-paths = []
-paths("start", "end", [ ], map(connections), 0) { |path| paths << path }
-puts paths.length
+count = 0 
+paths("start", "end", [ ], map(connections), 0) { |_| count += 1 }
+puts count
 
 puts "part 2"
-paths = []
-paths("start", "end", [ ], map(connections), 1) { |path| paths << path }
-puts paths.length
+count = 0 
+paths("start", "end", [ ], map(connections), 1) { |_| count += 1 }
+puts count
