@@ -1,9 +1,10 @@
 grid = Hash.new { |hash,key| hash[key] = 0 }
-ARGF.readlines.each.with_index { |line,x| line.strip.chars.each.with_index { |r,y| grid[ [y,x] ] = r.to_i } }
+ARGF.readlines.each.with_index { |line,x|
+    line.strip.chars.each.with_index { |r,y| grid[ [y,x] ] = r.to_i } }
 
 def remaining(grid, from, to)
-  # Compute Manhattan distance, using 5 as an estimate for average cost.
-  ((from[0] - to[0]).abs + (from[1] - to[1]).abs) * 5
+  # Compute Manhattan distance as an estimate for remaining cost.
+  ((from[0] - to[0]).abs + (from[1] - to[1]).abs) * 2
 end
 
 def neighbors(grid, node)
@@ -14,8 +15,8 @@ def neighbors(grid, node)
 end
 
 def expand(grid)
-  expanded_grid = {}
   size_x, size_y = grid.keys.sort.max[0]+1, grid.keys.sort.max[1]+1
+  expanded_grid = {}
 
   5.times do |dx|
     5.times do |dy|
@@ -40,13 +41,20 @@ def cheapest_path(grid, start, goal)
 
   # Loop until queue empty; take front of queue.
   while node = queue.shift do
-    # puts "queue.length: %6i, visited.length: %6i" % [queue.length, visited.length]
-
+    p node
     # Add to visited list
     visited[node[:key]] = node[:cost]
 
+    puts "node: #{node[:key].to_s} (#{node[:cost]})"
+
+    break if node[:key] == goal
+
+    puts "  queue.length: #{queue.length}"
+    puts "  visited.length: #{visited.length}"
+
     # Get neighbors that haven't been visited yet.
-    neighbors = neighbors(grid, node[:key]).filter { |key| ! visited.keys.include?(key) }
+    # neighbors = neighbors(grid, node[:key]).filter { |key| ! visited.keys.include?(key) }
+    neighbors = neighbors(grid, node[:key]).filter { |key| ! visited.include?(key) }
 
     neighbors.each do |neighbor|
       # Compute cost of getting here. 
@@ -57,17 +65,22 @@ def cheapest_path(grid, start, goal)
 
       # Add to queue, if it's not already in there.
       new_node = { :key => neighbor, :cost => cost, :remaining => remaining }
-      queue << new_node unless queue.count { |q| q[:key] == new_node[:key] } > 0
+
+      unless queue.any? { |q| q[:key] == new_node[:key] && q[:cost] <= new_node[:cost] }
+        queue << new_node
+      end
     end
 
-    # Sort queue on total and expected cost.
-    queue.sort! { |node1, node2|
-      node1[:cost] <=> node2[:cost]
-    }
+    # Sort queue on total cost.
+    # queue.sort! { |node1, node2| (node1[:cost] + node1[:remaining]) <=> (node2[:cost] + node2[:remaining]) }
+    queue.sort! { |node1, node2| (node1[:cost]) <=> (node2[:cost]) }
+    # p queue.map { |q| "#{q[:key].to_s}: (#{q[:cost]})" }.join(",")
   end
 
   # Return the cost of the goal node.
-  visited[goal] if visited[goal]
+  puts "queue.length: #{queue.length}"
+  puts "visited.length: #{visited.length}"
+  visited[goal]
 end
 
 puts "part 1"
